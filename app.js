@@ -14,8 +14,8 @@ mongoose.connect("mongodb://evanfaler:Wildlife1@ds131854.mlab.com:31854/ncaa_ran
 var rankSchema = new mongoose.Schema({
 	rank: Number,
 	team: String,
-	owner: String,
-	movement: Number
+	movement: Number,
+	owner: String
 });
 
 var Rank = mongoose.model('Rank', rankSchema);
@@ -95,7 +95,8 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		updateDB(JSON.parse(body));
+		//updateDB(JSON.parse(body));
+		initializeDB(JSON.parse(body));
 	});
 }
 
@@ -136,6 +137,42 @@ function updateDB(body){
 	});
 }
 
+function initializeDB(body){
+	Rank.remove({}, function(err,removed) {
+		if(err){
+			console.log(err);
+		} else{
+			console.log('Database cleared succesfully');
+		}
+	});
+
+	//Add new rankings to database
+	var addCount = 0;
+	body.coaches_poll.forEach(function(item, index){
+		var rank = item.rank;
+		newRank = {
+			rank: item.rank,
+			team: item.team,
+			movement: 0,
+			owner: 'None'
+		}
+
+		Rank.create(newRank, function(err, newlyCreated){
+			if(err){
+				console.log(err);
+			} else{
+				addCount++;
+				if(addCount === 25){
+					console.log('All ranks succesfully updated')
+				} else if(index === 26 && addCount < 25){
+					console.log('Database update unsucessful!');
+					console.log('Only ' + addCount + ' entries were added.');
+				}
+			}		
+		});		
+	});
+}
+
 //===ROUTES===//
 app.get('/', function(req, res){
 	console.log('Made it to the root directory');
@@ -157,8 +194,7 @@ app.put('/ranks/update', function(req, res){
 
 app.listen(8080, function(){
 	console.log('Server started on port 8080');
-	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run
-	//RUN_TOKEN = 'tR5S7CjThvx3';	//Preseason week run.
-
-	//getRun();
+	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run.
+	RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.
+	getRun();
 })
