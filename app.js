@@ -3,9 +3,12 @@ var app = express();
 var request = require('request');
 var schedule = require('node-schedule');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 //set the view engine to ejs
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended: true}));
 
 //Connect to database
 mongoose.connect("mongodb://evanfaler:Wildlife1@ds131854.mlab.com:31854/ncaa_rank", {useMongoClient: true});
@@ -95,8 +98,7 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		//updateDB(JSON.parse(body));
-		initializeDB(JSON.parse(body));
+		updateDB(JSON.parse(body));
 	});
 }
 
@@ -111,6 +113,10 @@ function updateDB(body){
 			console.log('Database cleared succesfully');
 		}
 	});
+
+	//TODO: UPDATE DATABASE WITH NEW DATA.
+	//Create array of top 25 teams with their respective ranks
+
 
 	//Add new rankings to database
 	var addCount = 0;
@@ -184,17 +190,36 @@ app.get('/ranks', function(req, res){
 });
 
 app.get('/ranks/edit', function(req, res){
-	console.log('Made it to the /ranks edit route.');
-	res.render('ranks-edit');
+	Rank.find({}).sort({rank:1}).exec(function(err, allRanks){
+        if(err){
+            console.log(err);
+        } else{
+            res.render('ranks-edit', {ranks: allRanks}); 
+        }
+    });
 });
 
-app.put('/ranks/update', function(req, res){
-	console.log('Put command at /index issued.');
+app.post('/ranks', function(req, res){
+	//Loop through and update DB
+	if(req.body.hasOwnProperty('save')) {
+		for (team in req.body){
+			if(req.body[team] != ""){
+				Rank.update({'team': team}, {
+					owner: req.body[team]
+				}, function(err){
+					if(err) {
+						console.log(err);
+					}
+				});
+			}
+		}
+	}
+	res.redirect('/ranks')
 });
 
 app.listen(8080, function(){
 	console.log('Server started on port 8080');
 	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run.
-	RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.
-	getRun();
+	//RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.
+	//getRun();
 })

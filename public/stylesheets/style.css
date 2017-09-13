@@ -1,0 +1,54 @@
+html {
+	width: 100%
+}
+
+body {
+	text-align: center;
+	height: 100%;
+	margin: 0;
+	background: #36D1DC;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to bottom, #36D1DC, #5B86E5);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to bottom, #36D1DC, #5B86E5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	font-family: 'Droid Serif', serif;
+}
+
+.title-header {
+	color: white;
+	font-family: 'Permanent Marker', cursive;
+	font-size: 4em;
+}
+
+.cms-container{
+	margin-left: 40px;
+	margin-right: 40px;
+	margin-bottom: 30px;
+}
+
+.cms-table {
+	border-right: 1px solid #C9E1F2;
+	border-left: 1px solid #C9E1F2;
+	width: 50%;
+	margin: 0 auto;
+	margin-bottom: 30px;
+}
+
+.cms-table tr:nth-child(odd) {
+	background: #f6fbff;
+}
+
+.cms-table tr:nth-child(even) {
+	background: #d4edff;
+}
+
+.cms-row {
+	margin: 5px;
+	padding-top: 5px; padding-bottom: 5px;
+	padding-left: 20px; padding-right: 20px; 
+	border-spacing: 0;
+	border-collapse: collapse;
+	border-top: 1px solid #C9E1F2;
+	text-align: center;
+}
+

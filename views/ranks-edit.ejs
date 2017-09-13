@@ -2,10 +2,46 @@
 <html>
 <head>
 	<title>Edit Rankings</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/components/button.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/components/input.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/components/icon.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Droid+Serif|Permanent+Marker" rel="stylesheet">
+
+	
 </head>
 <body>
 
-	<h1>This is the rank edit page</h1>
+	<h1 class="title-header">Edit Team Ownership</h1>
+
+
+	<form action="/ranks" method="POST" class='cms-container'>
+		<table class='cms-table' cellspacing="0" cellpadding="5">
+			<tr>
+				<td class='cms-row'>Current Rank</td>
+				<td class='cms-row'>Team Name</td>
+				<td class='cms-row'>Team Owner</td>
+			</tr>
+			<% ranks.forEach(function(rank, index){ %>
+			<tr>
+				<td class='cms-row'><%= rank.rank %></td>
+				<td class='cms-row'><%= rank.team %></td>
+				<td class='cms-row'>
+					<div class="ui left icon input">
+					  	<input type="text" name="<%= rank.team %>" placeholder="<%= rank.owner %>">
+					  	<i class="user icon"></i>
+					</div>
+				</td>
+			</tr>
+			<% }); %>
+		</table>
+			<div class='ui buttons center'>
+				<button class='ui button' name='cancel'>Cancel</button>
+				<div class='or'></div>
+				<button class='ui positive button' name='save'>Save Changes</button>
+			</div>		
+	</form>
+	
 
 </body>
 </html>
