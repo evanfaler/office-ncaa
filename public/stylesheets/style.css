@@ -12,6 +12,7 @@ body {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	font-family: 'Droid Serif', serif;
+	color: #177d84;
 }
 
 .title-header {
@@ -21,14 +22,20 @@ body {
 }
 
 .main-card {
+	background-color: #d5f5f8;
 	border-radius: 2px;
 	box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
+.secondary-card {
+	background-color: #f2fcfd;
+	border-radius: 2px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
 .main{
 	width: 700px;
-	height: 500px;
-	background: white;
+	height: 1500px;
 	margin: 0 auto;
 }
 
@@ -37,6 +44,13 @@ body {
   	justify-content: center;
   	flex-direction: column;
   	text-align: center;
+}
+
+.left {
+	display: flex;
+  	justify-content: center;
+  	flex-direction: column;
+  	text-align: left;
 }
 
 .card-header {
@@ -54,6 +68,7 @@ body {
 
 .row {
 	flex-direction: row;
+	height: 100%;
 }
 
 .tab {
@@ -65,12 +80,15 @@ body {
 	flex-basis: 90%;
 }
 
+.rank-item {
+	flex-basis: 4%;
+	margin-left: 10px; margin-right: 10px;
+	margin-bottom: 10px;
+}
+
 .tab-item {
 	flex-basis: 70px;
-	justify-content: center;
-	align-items: center;
 	font-size: 1.5em;
-	color: grey;
 }
 
 .tab-item.active {
@@ -78,7 +96,37 @@ body {
 	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)
 }
 
+.rank-container {
+	flex-basis: 10%;
+	font-size: 1.2em;
+	font-weight: 800px;
+}
 
+.image-container {
+	flex-basis: 20%;
+	background-color: red;
+}
+
+#spacer1 {
+	flex-basis: 10%;
+}
+
+#spacer1 {
+	flex-basis: 15%;
+}
+
+.team-container {
+	flex-basis: 40%;
+}
+
+.owner-container {
+	flex-basis: 15%;
+}
+
+.icon {
+	color: #f2fcfd;
+	font-size: 1.3em;
+}
 
 .cms-container{
 	margin-left: 40px;

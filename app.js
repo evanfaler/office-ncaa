@@ -151,8 +151,13 @@ app.get('/', function(req, res){
 });
 
 app.get('/ranks', function(req, res){
-	console.log('Made it to the /ranks index route.');
-	res.render('ranks');
+	Rank.find({}).sort({rank:1}).exec(function(err, allRanks){
+        if(err){
+            console.log(err);
+        } else{
+            res.render('ranks', {ranks: allRanks}); 
+        }
+    });
 });
 
 app.get('/ranks/edit', function(req, res){
@@ -183,7 +188,8 @@ app.post('/ranks', function(req, res){
 	res.redirect('/ranks')
 });
 
-app.listen(process.env.PORT, process.env.IP, function(){
+//process.env.PORT, process.env.IP
+app.listen(8080, function(){
 	console.log('Server started on port 8080');
 	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run.
 	//RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.

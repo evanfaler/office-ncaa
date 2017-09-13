@@ -4,12 +4,13 @@
 	<title>NCAA Index</title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<link href="https://fonts.googleapis.com/css?family=Droid+Serif|Permanent+Marker" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
 <body>
 
 	<h1 class='title-header'>NCAA Top 25 Pick'em</h1>
 	
-	<div class='main flex-container column'>
+	<div class='main main-card flex-container column'>
 		<span class='card-header center'>RANKINGS</span>
 		<div class='flex-container row'>
 			<div class='flex-container tab column'>
@@ -18,7 +19,28 @@
 				<span class='tab-item center'>2</span>
 			</div>
 			<div class='flex-container team column'>
-				<span class='team-card'>Team 1</span>
+
+				<div class='flex-container rank-item row'>
+					<span class='rank-container center ion-ribbon-a icon'></span>
+					<span class='image-container center icon'></span>
+					<span id="spacer1"></span>
+					<span class='team-container left ion-ios-americanfootball icon'></span>
+					<span id="spacer2"></span>
+					<span class='owner-container left ion-person icon'></span>
+				</div>
+
+				<% ranks.forEach(function(rank, index){ %>
+				<div class='flex-container rank-item row secondary-card'>
+					<!-- Insert rank card items here. -->
+					<span class='rank-container center'><%=rank.rank%></span>
+					<span class='image-container center'></span>
+					<span id="spacer1"></span>
+					<span class='team-container left'><%=rank.team%></span>
+					<span id="spacer2"></span>
+					<span class='owner-container left'><%=rank.owner%></span>
+				</div>
+				<% }); %>
+
 			</div>
 		</div>
 	</div>
