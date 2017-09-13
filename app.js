@@ -147,7 +147,7 @@ function initializeDB(body){
 
 //===ROUTES===//
 app.get('/', function(req, res){
-	console.log('Made it to the root directory');
+	res.send('Root Directory');
 });
 
 app.get('/ranks', function(req, res){
@@ -189,7 +189,7 @@ app.post('/ranks', function(req, res){
 });
 
 //process.env.PORT, process.env.IP
-app.listen(8080, function(){
+app.listen(process.env.PORT, process.env.IP, function(){
 	console.log('Server started on port 8080');
 	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run.
 	//RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.

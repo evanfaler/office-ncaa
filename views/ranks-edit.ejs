@@ -21,6 +21,7 @@
 				<td class='cms-row'>Current Rank</td>
 				<td class='cms-row'>Team Name</td>
 				<td class='cms-row'>Team Owner</td>
+				<td class='cms-row'>Logo Number</td>
 			</tr>
 			<% ranks.forEach(function(rank, index){ %>
 			<tr>
@@ -30,6 +31,12 @@
 					<div class="ui left icon input">
 					  	<input type="text" name="<%= rank.team %>" placeholder="<%= rank.owner %>">
 					  	<i class="user icon"></i>
+					</div>
+				</td>
+				<td class='cms-row'>
+					<div class="ui left icon input">
+					  	<input type="text" placeholder="#">
+					  	<i class="image icon"></i>
 					</div>
 				</td>
 			</tr>
