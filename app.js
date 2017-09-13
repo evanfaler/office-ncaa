@@ -98,49 +98,15 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		updateDB(JSON.parse(body));
+		//updateDB(JSON.parse(body));
 	});
 }
 
 //TODO: update database correctly. 
 function updateDB(body){
-	//console.log(body.coaches_poll[0].team);
-	//Clear all previous rankings from database
-	Rank.remove({}, function(err,removed) {
-		if(err){
-			console.log(err);
-		} else{
-			console.log('Database cleared succesfully');
-		}
-	});
 
 	//TODO: UPDATE DATABASE WITH NEW DATA.
-	//Create array of top 25 teams with their respective ranks
 
-
-	//Add new rankings to database
-	var addCount = 0;
-	body.coaches_poll.forEach(function(item, index){
-		var rank = item.rank;
-		newRank = {
-			rank: item.rank,
-			team: item.team
-		}
-
-		Rank.create(newRank, function(err, newlyCreated){
-			if(err){
-				console.log(err);
-			} else{
-				addCount++;
-				if(addCount === 25){
-					console.log('All ranks succesfully updated')
-				} else if(index === 26 && addCount < 25){
-					console.log('Database update unsucessful!');
-					console.log('Only ' + addCount + ' entries were added.');
-				}
-			}		
-		});		
-	});
 }
 
 function initializeDB(body){
@@ -217,7 +183,7 @@ app.post('/ranks', function(req, res){
 	res.redirect('/ranks')
 });
 
-app.listen(8080, function(){
+app.listen(process.env.PORT, process.env.IP, function(){
 	console.log('Server started on port 8080');
 	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run.
 	//RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.
