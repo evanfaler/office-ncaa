@@ -17,6 +17,8 @@ mongoose.connect("mongodb://evanfaler:Wildlife1@ds131854.mlab.com:31854/ncaa_ran
 var rankSchema = new mongoose.Schema({
 	rank: Number,
 	team: String,
+	year: Number,
+	week: Number,
 	movement: Number,
 	owner: String
 });
@@ -98,7 +100,8 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		//updateDB(JSON.parse(body));
+		updateDB(JSON.parse(body));
+		//initializeDB(JSON.parse(body));
 	});
 }
 
@@ -107,6 +110,68 @@ function updateDB(body){
 
 	//TODO: UPDATE DATABASE WITH NEW DATA.
 
+	//Copy week 1 database
+	//Change all ranks to 25
+	//Run through and change rank on teams that show up in curRanks
+
+	//DELETE ANY PREVIOUS DB ENTRIES FOR THE WEEK BEING EDITED
+	Rank.find({'week': week}).remove(function(err){
+		console.log(err);
+	});
+
+	//FIND AND COPY THE FIRST WEEK OF RANKS	
+	Rank.find({'week':1}, function(err, pastRanks){
+		var addCount = 0;
+		pastRanks.forEach(function(item, index){
+
+			newRank = {
+				rank: 25,
+				team: item.team,
+				year: item.year.slice(-4),
+				week: parseInt(item.week.slice(-2)),
+				movement: item.movement,
+				owner: 'None'
+			}
+
+			Rank.create(newRank, function(err, newlyCreated){
+				if(err){
+					console.log(err);
+				} else{
+					addCount++;
+					if(addCount === 25){
+						console.log('All ranks succesfully updated')
+					} else if(index === 26 && addCount < 25){
+						console.log('Database update unsucessful!');
+						console.log('Only ' + addCount + ' entries were added.');
+					}
+				}		
+			});		
+		});
+	});
+
+	var week = parseInt(curRanks[0].week.slice(-2));
+
+	
+
+	
+
+
+	// var curRanks = body.coaches_poll;
+	// var updated = false;
+	// Rank.find({'week':1}, function(err, pastRanks){
+	// 	pastRanks.forEach(function(oldRank){
+	// 		curRanks.forEach(function(curRank){
+	// 			if(oldRank.team === curRank.team){
+	// 				console.log('Need to update ' + oldRank.team);
+	// 				updated = true;
+	// 			} else {
+
+	// 			}
+	// 		});
+	// 	});
+	// });
+
+	
 }
 
 function initializeDB(body){
@@ -125,7 +190,9 @@ function initializeDB(body){
 		newRank = {
 			rank: item.rank,
 			team: item.team,
-			movement: 0,
+			year: item.year.slice(-4),
+			week: parseInt(item.week.slice(-2)),
+			movement: item.movement,
 			owner: 'None'
 		}
 
@@ -151,7 +218,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/ranks', function(req, res){
-	Rank.find({}).sort({rank:1}).exec(function(err, allRanks){
+	Rank.find({'week':1}).sort({rank:1}).exec(function(err, allRanks){
         if(err){
             console.log(err);
         } else{
@@ -161,7 +228,7 @@ app.get('/ranks', function(req, res){
 });
 
 app.get('/ranks/edit', function(req, res){
-	Rank.find({}).sort({rank:1}).exec(function(err, allRanks){
+	Rank.find({'week':1}).sort({rank:1}).exec(function(err, allRanks){
         if(err){
             console.log(err);
         } else{
@@ -189,9 +256,10 @@ app.post('/ranks', function(req, res){
 });
 
 //process.env.PORT, process.env.IP
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080, function(){
 	console.log('Server started on port 8080');
-	//RUN_TOKEN = 'tnw1UmdGbSVF';	//Current week run.
-	//RUN_TOKEN = 'tR5S7CjThvx3';		//Preseason run data.
-	//getRun();
+	//RUN_TOKEN = 'tj_JvS49QrML';		//Week 1
+	RUN_TOKEN = 'tJrpgN_AbWCW';			//Week 2
+	//RUN_TOKEN = 't7WyMnBm6Yig';		//Week 3
+	getRun();
 })
