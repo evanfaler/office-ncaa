@@ -34,46 +34,46 @@ var RUN_TOKEN = '';
 //===PARSEHUB REQUESTS===//
 //Request new data run from parseHub Every day at 5:55AM and 11:55AM
 //scheduler for 5:55AM
-var j = schedule.scheduleJob('0 55 5 * * *', function(){
-	newRun();	//requests new parseHub run
+// var j = schedule.scheduleJob('0 55 5 * * *', function(){
+// 	newRun();	//requests new parseHub run
 
-	var date = new Date();
-	var current_hour = date.getHours();
-	var current_minute = date.getMinutes();
-	var current_second = date.getSeconds();
-  	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
-});
-//scheduler for 11:55PM
-var j = schedule.scheduleJob('0 55 11 * * *', function(){
-	newRun();	//requests new parseHub run
+// 	var date = new Date();
+// 	var current_hour = date.getHours();
+// 	var current_minute = date.getMinutes();
+// 	var current_second = date.getSeconds();
+//   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
+// });
+// //scheduler for 11:55PM
+// var j = schedule.scheduleJob('0 55 11 * * *', function(){
+// 	newRun();	//requests new parseHub run
 
-	var date = new Date();
-	var current_hour = date.getHours();
-	var current_minute = date.getMinutes();
-  	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute);
-});
+// 	var date = new Date();
+// 	var current_hour = date.getHours();
+// 	var current_minute = date.getMinutes();
+//   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute);
+// });
 
-//Retrieve most recent data run from parseHub Every day at 6:00AM and 12:00PM
-//scheduler for 6:00AM
-var j = schedule.scheduleJob('0 0 6 * * *', function(){
-	//PULL DATA FROM PARSEHUB
-	getRun();
+// //Retrieve most recent data run from parseHub Every day at 6:00AM and 12:00PM
+// //scheduler for 6:00AM
+// var j = schedule.scheduleJob('0 0 6 * * *', function(){
+// 	//PULL DATA FROM PARSEHUB
+// 	getRun();
 
-	var date = new Date();
-	var current_hour = date.getHours();
-	var current_minute = date.getMinutes();
-  	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
-});
-//scheduler for 12:00PM
-var j = schedule.scheduleJob('0 0 12 * * *', function(){
-	//PULL DATA FROM PARSEHUB
-	getRun();
+// 	var date = new Date();
+// 	var current_hour = date.getHours();
+// 	var current_minute = date.getMinutes();
+//   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
+// });
+// //scheduler for 12:00PM
+// var j = schedule.scheduleJob('0 0 12 * * *', function(){
+// 	//PULL DATA FROM PARSEHUB
+// 	getRun();
 
-	var date = new Date();
-	var current_hour = date.getHours();
-	var current_minute = date.getMinutes();
-  	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
-});
+// 	var date = new Date();
+// 	var current_hour = date.getHours();
+// 	var current_minute = date.getMinutes();
+//   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
+// });
 
 
 //===HELPER FUNCTIONS===//
@@ -101,8 +101,8 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		//updateDB(JSON.parse(body));
-		initializeDB(JSON.parse(body));
+		updateDB(JSON.parse(body));
+		//initializeDB(JSON.parse(body));
 	});
 }
 
@@ -111,74 +111,61 @@ function updateDB(body){
 
 	//TODO: UPDATE DATABASE WITH NEW DATA.
 
-	//Copy week 1 database
-	//Change all ranks to 25
-	//Run through and change rank on teams that show up in curRanks
-
-	//DELETE ANY PREVIOUS DB ENTRIES FOR THE WEEK BEING EDITED
-	Rank.find({'week': week}).remove(function(err){
+	
+	Rank.find({'week': parseInt(body.coaches_poll[0].week.slice(-2))}).remove(function(err){
 		console.log(err);
 	});
+	
+	//Make Array of current rankings
+	var curRanks = body.coaches_poll;
+	//Loop through week 1 db entries
+	Rank.find({'week':1}, function(err, initRanks){
+			var rank = 25;
+		
+		//If team curRank team is in initRanks, update rank to current rank
+		//Otherwise rank remains unchanged at 25
+		for(var i = 0; i < initRanks.length; i++){
+			var initTeam = initRanks[i].team;
 
-	//FIND AND COPY THE FIRST WEEK OF RANKS
-
-
-
-
-
-	//OLD CODE. COPY AND PASTE AS REQUIRED.
-	Rank.find({'week':1}, function(err, pastRanks){
-		var addCount = 0;
-		pastRanks.forEach(function(item, index){
-
-			newRank = {
-				rank: 25,
-				team: item.team,
-				year: item.year.slice(-4),
-				week: parseInt(item.week.slice(-2)),
-				movement: item.movement,
-				owner: 'None'
+			var curIndex = curRanks.findIndex(function(rank) {
+				return rank.team == initTeam;
+			});
+			
+			if(curIndex != -1){
+				rank = curRanks[curIndex].rank;
+			} else{
+				rank = 25;
 			}
 
+			//Create new Rank object with updated values
+			var newRank = {
+				rank: rank,
+				team: initRanks[i].team,				//THIS IS WRONG
+				year: initRanks[i].year,
+				week: parseInt(curRanks[0].week.slice(-2)),
+				movement: initRanks[i].movement,
+				owner: initRanks[i].owner,
+				imgNumber: initRanks[i].imgNumber
+			}
+
+			//Save to DB
 			Rank.create(newRank, function(err, newlyCreated){
-				if(err){
-					console.log(err);
-				} else{
-					addCount++;
-					if(addCount === 25){
-						console.log('All ranks succesfully updated')
-					} else if(index === 26 && addCount < 25){
-						console.log('Database update unsucessful!');
-						console.log('Only ' + addCount + ' entries were added.');
-					}
-				}		
-			});		
-		});
+			if(err){
+				console.log('Database NOT Updated. Error Below:');
+				console.log(err);
+			} else{
+				console.log('Database Updated Succesfully!');
+			}		
+		});	
+		}
+		
+		
 	});
+		//Copy week 1 db entry into newRank object
+			//If current entry is in current rankings, copy entry and update rank
+			//If current entry is not in current rankings, change rank to 25
+		//Create new rank entry in DB with newRank object
 
-	//var week = parseInt(curRanks[0].week.slice(-2));
-
-	
-
-	
-
-
-	// var curRanks = body.coaches_poll;
-	// var updated = false;
-	// Rank.find({'week':1}, function(err, pastRanks){
-	// 	pastRanks.forEach(function(oldRank){
-	// 		curRanks.forEach(function(curRank){
-	// 			if(oldRank.team === curRank.team){
-	// 				console.log('Need to update ' + oldRank.team);
-	// 				updated = true;
-	// 			} else {
-
-	// 			}
-	// 		});
-	// 	});
-	// });
-
-	
 }
 
 function initializeDB(body){
@@ -259,8 +246,6 @@ app.post('/ranks', function(req, res){
 				});
 			}
 			if(req.body[item] != "" && item.slice(0,3) === "img"){
-				console.log('Triggered!');
-				console.log(req.body[item]);
 				Rank.update({'team': item.substr(3)}, {
 					imgNumber: req.body[item]
 				}, function(err){
@@ -278,7 +263,7 @@ app.post('/ranks', function(req, res){
 app.listen(8080, function(){
 	console.log('Server started on port 8080');
 	//RUN_TOKEN = 'tj_JvS49QrML';		//Week 1
-	//RUN_TOKEN = 'tJrpgN_AbWCW';			//Week 2
+	//RUN_TOKEN = 'tJrpgN_AbWCW';		//Week 2
 	//RUN_TOKEN = 't7WyMnBm6Yig';		//Week 3
 	//getRun();
 })

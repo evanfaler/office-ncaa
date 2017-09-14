@@ -36,6 +36,7 @@ body {
 	width: 700px;
 	height: 1500px;
 	margin: 0 auto;
+	margin-bottom: 50px;
 }
 
 .center {
@@ -50,6 +51,13 @@ body {
   	justify-content: center;
   	flex-direction: column;
   	text-align: left;
+}
+
+.right {
+	display: flex;
+  	justify-content: center;
+  	flex-direction: column;
+  	text-align: right;
 }
 
 .card-header {
@@ -102,12 +110,19 @@ body {
 }
 
 .image-container {
-	flex-basis: 20%;
-	background-color: red;
+	flex-basis: 10%;
+}
+
+.logo {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    background-position: center center;
+    background-size: cover;
 }
 
 #spacer1 {
-	flex-basis: 10%;
+	flex-basis: 20%;
 }
 
 #spacer1 {

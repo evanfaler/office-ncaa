@@ -30,15 +30,18 @@
 				</div>
 
 				<% ranks.forEach(function(rank, index){ %>
-				<div class='flex-container rank-item row secondary-card'>
-					<!-- Insert rank card items here. -->
-					<span class='rank-container center'><%=rank.rank%></span>
-					<span class='image-container center'></span>
-					<span id="spacer1"></span>
-					<span class='team-container left'><%=rank.team%></span>
-					<span id="spacer2"></span>
-					<span class='owner-container left'><%=rank.owner%></span>
-				</div>
+				<% if(index != 24){ %>
+					<% var imgURL = 'https://b.fssta.com/uploads/content/dam/fsdigital/fscom/global/dev/static_resources/ncaaf/teams/retina/' + rank.imgNumber + '.vresize.48.48.medium.0.png' %>
+					<div class='flex-container rank-item row secondary-card'>
+						<!-- Insert rank card items here. -->
+							<span class='rank-container center'><%=rank.rank%></span>
+							<span id="spacer1"></span>
+							<span class='image-container center'><img class='logo' src="<%= imgURL %>" style="height:100%;"></span>
+							<span class='team-container left'><%=rank.team%></span>
+							<span id="spacer2"></span>
+							<span class='owner-container left'><%=rank.owner%></span>
+					</div>
+				<% } %>
 				<% }); %>
 
 			</div>

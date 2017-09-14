@@ -19,27 +19,32 @@
 		<table class='cms-table main-card' cellspacing="0" cellpadding="5">
 			<tr>
 				<td class='cms-row'>Current Rank</td>
+				<td class='cms-row'>Logo</td>
 				<td class='cms-row'>Team Name</td>
 				<td class='cms-row'>Team Owner</td>
 				<td class='cms-row'>Logo Number</td>
 			</tr>
 			<% ranks.forEach(function(rank, index){ %>
-			<tr>
-				<td class='cms-row'><%= rank.rank %></td>
-				<td class='cms-row'><%= rank.team %></td>
-				<td class='cms-row'>
-					<div class="ui left icon input">
-					  	<input type="text" name="<%= rank.team %>" placeholder="<%= rank.owner %>">
-					  	<i class="user icon"></i>
-					</div>
-				</td>
-				<td class='cms-row'>
-					<div class="ui left icon input">
-					  	<input type="text" name='img<%= rank.team %>' placeholder="<%=rank.imgNumber%>">
-					  	<i class="image icon"></i>
-					</div>
-				</td>
-			</tr>
+			<% if(index != 24){ %>
+				<tr>
+					<td class='cms-row'><%= rank.rank %></td>
+					<% var imgURL = 'https://b.fssta.com/uploads/content/dam/fsdigital/fscom/global/dev/static_resources/ncaaf/teams/retina/' + rank.imgNumber + '.vresize.48.48.medium.0.png' %>
+					<td class='cms-row'><img class='logo' src="<%= imgURL %>" style="height:100%;"></td>
+					<td class='cms-row'><%= rank.team %></td>
+					<td class='cms-row'>
+						<div class="ui left icon input">
+						  	<input type="text" name="<%= rank.team %>" placeholder="<%= rank.owner %>">
+						  	<i class="user icon"></i>
+						</div>
+					</td>
+					<td class='cms-row'>
+						<div class="ui left icon input">
+						  	<input type="text" name='img<%= rank.team %>' placeholder="<%=rank.imgNumber%>">
+						  	<i class="image icon"></i>
+						</div>
+					</td>
+				</tr>
+			<% } %>
 			<% }); %>
 		</table>
 			<div class='ui buttons center'>
