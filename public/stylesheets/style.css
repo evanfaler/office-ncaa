@@ -12,6 +12,7 @@ body {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	color: #177d84;
+	font-family: 'Roboto', sans-serif;
 }
 
 .title-header {
@@ -21,13 +22,13 @@ body {
 }
 
 .main-card {
-	background-color: #d5f5f8;
+	background-color: #dae1e5;
 	border-radius: 2px;
 	box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
 .secondary-card {
-	background-color: #f2fcfd;
+	background-color: #eef1f3;
 	border-radius: 2px;
 	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
@@ -37,6 +38,7 @@ body {
 	height: 1500px;
 	margin: 0 auto;
 	margin-bottom: 50px;
+	border-radius: 20px;
 }
 
 .center {
@@ -78,10 +80,38 @@ body {
 	height: 100%;
 }
 
-.tab {
-	flex-basis: 10%;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+.section-header{
+	flex-direction: row;
 }
+
+.tab {
+	background-color: #253035;
+	flex-basis: 10%;
+	border-radius: 20px 0px 0px 20px;
+}
+
+.tab-item {
+	color: #eef1f3;
+	text-decoration: none;
+	flex-basis: 70px;
+	font-size: 1.5em;
+	padding-left: 5px; padding-right: 5px;
+}
+
+.tab-item:hover {
+	background-color: #334249;
+	box-shadow: 0 5px 5px rgba(0,0,0,0.12), 0 5px 5px rgba(0,0,0,0.24);
+}
+
+.active {
+	background-color: #171e21;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.12), 0 2px 2px rgba(0,0,0,0.24);
+}
+
+.top {
+	border-radius: 20px 0px 0px 0px;
+}
+
 
 .team{
 	flex-basis: 90%;
@@ -91,16 +121,6 @@ body {
 	flex-basis: 4%;
 	margin-left: 10px; margin-right: 10px;
 	margin-bottom: 10px;
-}
-
-.tab-item {
-	flex-basis: 70px;
-	font-size: 1.5em;
-}
-
-.tab-item.active {
-	color: blue;
-	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)
 }
 
 .rank-container {

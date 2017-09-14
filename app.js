@@ -101,17 +101,13 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		updateDB(JSON.parse(body));
+		addPollToDatabase(JSON.parse(body));
 		//initializeDB(JSON.parse(body));
 	});
 }
 
-//TODO: update database correctly. 
-function updateDB(body){
-
-	//TODO: UPDATE DATABASE WITH NEW DATA.
-
-	
+//add new weekly poll to database. 
+function addPollToDatabase(body){
 	Rank.find({'week': parseInt(body.coaches_poll[0].week.slice(-2))}).remove(function(err){
 		console.log(err);
 	});
@@ -161,11 +157,31 @@ function updateDB(body){
 		
 		
 	});
-		//Copy week 1 db entry into newRank object
-			//If current entry is in current rankings, copy entry and update rank
-			//If current entry is not in current rankings, change rank to 25
-		//Create new rank entry in DB with newRank object
+}
 
+function updateDatabase(body){
+	if(body.hasOwnProperty('save')) {
+		for (var item in body){
+			if(body[item] != "" && item.slice(0,3) != "img"){
+				Rank.update({'team': item}, {
+					owner: body[item]
+				}, function(err){
+					if(err) {
+						console.log(err);
+					}
+				});
+			}
+			if(body[item] != "" && item.slice(0,3) === "img"){
+				Rank.update({'team': item.substr(3)}, {
+					imgNumber: body[item]
+				}, function(err){
+					if(err) {
+						console.log(err);
+					}
+				});
+			}
+		}
+	}
 }
 
 function initializeDB(body){
@@ -181,7 +197,7 @@ function initializeDB(body){
 	var addCount = 0;
 	body.coaches_poll.forEach(function(item, index){
 		var rank = item.rank;
-		newRank = {
+		var newRank = {
 			rank: item.rank,
 			team: item.team,
 			year: item.year.slice(-4),
@@ -222,6 +238,16 @@ app.get('/ranks', function(req, res){
     });
 });
 
+app.get('/ranks/:week', function(req, res){
+	Rank.find({'week': req.params.week}).sort({rank:1}).exec(function(err, allRanks){
+        if(err){
+            console.log(err);
+        } else{
+            res.render('ranks', {ranks: allRanks}); 
+        }
+    });
+});
+
 app.get('/ranks/edit', function(req, res){
 	Rank.find({'week':1}).sort({rank:1}).exec(function(err, allRanks){
         if(err){
@@ -233,30 +259,8 @@ app.get('/ranks/edit', function(req, res){
 });
 
 app.post('/ranks', function(req, res){
-	//Loop through and update DB
-	if(req.body.hasOwnProperty('save')) {
-		for (item in req.body){
-			if(req.body[item] != "" && item.slice(0,3) != "img"){
-				Rank.update({'team': item}, {
-					owner: req.body[item]
-				}, function(err){
-					if(err) {
-						console.log(err);
-					}
-				});
-			}
-			if(req.body[item] != "" && item.slice(0,3) === "img"){
-				Rank.update({'team': item.substr(3)}, {
-					imgNumber: req.body[item]
-				}, function(err){
-					if(err) {
-						console.log(err);
-					}
-				});
-			}
-		}
-	}
-	res.redirect('/ranks')
+	updateDatabase(req.body);
+	res.redirect('/ranks');
 });
 
 //process.env.PORT, process.env.IP

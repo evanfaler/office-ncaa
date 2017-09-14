@@ -3,23 +3,31 @@
 <head>
 	<title>NCAA Index</title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<link href="https://fonts.googleapis.com/css?family=Droid+Serif|Permanent+Marker" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Permanent+Marker" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
 <body>
 
 	<h1 class='title-header'>NCAA Top 25 Pick'em</h1>
 	
-	<div class='main main-card flex-container column'>
-		<span class='card-header center'>RANKINGS</span>
+	<div class='main-card main flex-container column'>
 		<div class='flex-container row'>
-			<div class='flex-container tab column'>
-				<span class='tab-item active center'>P</span>
-				<span class='tab-item center'>1</span>
-				<span class='tab-item center'>2</span>
+			<div class='flex-container secondary-card tab column'>
+				<a class='tab-item active center top' href='/ranks/1'>1</a>
+				<a class='tab-item center' href='/ranks/2'>2</a>
+				<a class='tab-item center' href='/ranks/3'>3</a>
+				
 			</div>
 			<div class='flex-container team column'>
-
+				
+				<div class='flex-container section-header center'>
+					<h2>Weekly Standings</h2>
+				</div>
+				
+				<div class='flex-container section-header center'>
+					<h2>Weekly Team Ranking</h2>
+				</div>
+				
 				<div class='flex-container rank-item row'>
 					<span class='rank-container center ion-ribbon-a icon'></span>
 					<span class='image-container center icon'></span>
@@ -48,8 +56,6 @@
 		</div>
 	</div>
 	
-	
-
-
+	<script type="text/javascript" src="/scripts/rank.js"></script>
 </body>
 </html>
