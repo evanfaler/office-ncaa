@@ -20,7 +20,8 @@ var rankSchema = new mongoose.Schema({
 	year: Number,
 	week: Number,
 	movement: Number,
-	owner: String
+	owner: String,
+	imgNumber: Number
 });
 
 var Rank = mongoose.model('Rank', rankSchema);
@@ -100,8 +101,8 @@ function getRun() {
 	    	format: "json"
 	  	}
 	}, function(err, resp, body) {
-		updateDB(JSON.parse(body));
-		//initializeDB(JSON.parse(body));
+		//updateDB(JSON.parse(body));
+		initializeDB(JSON.parse(body));
 	});
 }
 
@@ -119,7 +120,13 @@ function updateDB(body){
 		console.log(err);
 	});
 
-	//FIND AND COPY THE FIRST WEEK OF RANKS	
+	//FIND AND COPY THE FIRST WEEK OF RANKS
+
+
+
+
+
+	//OLD CODE. COPY AND PASTE AS REQUIRED.
 	Rank.find({'week':1}, function(err, pastRanks){
 		var addCount = 0;
 		pastRanks.forEach(function(item, index){
@@ -149,7 +156,7 @@ function updateDB(body){
 		});
 	});
 
-	var week = parseInt(curRanks[0].week.slice(-2));
+	//var week = parseInt(curRanks[0].week.slice(-2));
 
 	
 
@@ -193,7 +200,8 @@ function initializeDB(body){
 			year: item.year.slice(-4),
 			week: parseInt(item.week.slice(-2)),
 			movement: item.movement,
-			owner: 'None'
+			owner: 'None',
+			imgNumber: -1
 		}
 
 		Rank.create(newRank, function(err, newlyCreated){
@@ -240,10 +248,21 @@ app.get('/ranks/edit', function(req, res){
 app.post('/ranks', function(req, res){
 	//Loop through and update DB
 	if(req.body.hasOwnProperty('save')) {
-		for (team in req.body){
-			if(req.body[team] != ""){
-				Rank.update({'team': team}, {
-					owner: req.body[team]
+		for (item in req.body){
+			if(req.body[item] != "" && item.slice(0,3) != "img"){
+				Rank.update({'team': item}, {
+					owner: req.body[item]
+				}, function(err){
+					if(err) {
+						console.log(err);
+					}
+				});
+			}
+			if(req.body[item] != "" && item.slice(0,3) === "img"){
+				console.log('Triggered!');
+				console.log(req.body[item]);
+				Rank.update({'team': item.substr(3)}, {
+					imgNumber: req.body[item]
 				}, function(err){
 					if(err) {
 						console.log(err);
@@ -259,7 +278,7 @@ app.post('/ranks', function(req, res){
 app.listen(8080, function(){
 	console.log('Server started on port 8080');
 	//RUN_TOKEN = 'tj_JvS49QrML';		//Week 1
-	RUN_TOKEN = 'tJrpgN_AbWCW';			//Week 2
+	//RUN_TOKEN = 'tJrpgN_AbWCW';			//Week 2
 	//RUN_TOKEN = 't7WyMnBm6Yig';		//Week 3
-	getRun();
+	//getRun();
 })
