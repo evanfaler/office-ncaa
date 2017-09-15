@@ -106,6 +106,71 @@ function getRun() {
 	});
 }
 
+function getStandings(curWeek, res, allRanks){
+	var players = ['Evan', 'Gary', 'Joe', 'Ken'];
+	var playerObjects = [];
+
+	var evanPoints = 0;
+	var garyPoints = 0;
+	var joePoints = 0;
+	var kenPoints = 0;
+
+
+	Rank.find({week: curWeek}, function(err, ranks){
+		if(err){
+			console.log('Something went wrong finding standings');
+			console.log(err);
+		} else {
+			for(var i = 0; i < ranks.length; i++){
+				if(ranks[i].owner === 'Evan'){
+					evanPoints += ranks[i].rank;
+				} else if(ranks[i].owner === 'Gary'){
+					garyPoints += ranks[i].rank;
+				} else if (ranks[i].owner === 'Joe'){
+					joePoints += ranks[i].rank;
+				} else if (ranks[i].owner === 'Ken'){
+					kenPoints += ranks[i].rank;
+				}
+			}
+
+			playerObjects.push({
+				name: 'Evan',
+				score: evanPoints
+			});
+			playerObjects.push({
+				name: 'Gary',
+				score: garyPoints
+			});
+			playerObjects.push({
+				name: 'Joe',
+				score: joePoints
+			});
+			playerObjects.push({
+				name: 'Ken',
+				score: kenPoints
+			});
+
+			var sortedArray = playerObjects.sort(compare);
+			res.render('ranks', {ranks: allRanks, standings: sortedArray}); 
+		}
+	});	
+}
+
+function compare(a, b){
+	var scoreA = a.score;
+	var scoreB = b.score;
+
+	var comparison = 0;
+	if(scoreA > scoreB){
+		comparison = -1;
+	} else if (scoreA < scoreB){
+		comparison = 1;
+	}
+	return comparison
+}
+
+
+
 //add new weekly poll to database. 
 function addPollToDatabase(body){
 	Rank.find({'week': parseInt(body.coaches_poll[0].week.slice(-2))}).remove(function(err){
@@ -233,7 +298,7 @@ app.get('/ranks', function(req, res){
         if(err){
             console.log(err);
         } else{
-            res.render('ranks', {ranks: allRanks}); 
+        	getStandings(1, res, allRanks);
         }
     });
 });
@@ -243,7 +308,7 @@ app.get('/ranks/:week', function(req, res){
         if(err){
             console.log(err);
         } else{
-            res.render('ranks', {ranks: allRanks}); 
+        	getStandings(req.params.week, res, allRanks);
         }
     });
 });

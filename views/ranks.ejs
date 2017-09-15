@@ -18,41 +18,49 @@
 				<a class='tab-item center' href='/ranks/3'>3</a>
 				
 			</div>
-			<div class='flex-container team column'>
-				
-				<div class='flex-container section-header center'>
+
+				<div class='flex-container team column'>
+
 					<h2>Weekly Standings</h2>
-				</div>
-				
-				<div class='flex-container section-header center'>
-					<h2>Weekly Team Ranking</h2>
-				</div>
-				
-				<div class='flex-container rank-item row'>
-					<span class='rank-container center ion-ribbon-a icon'></span>
-					<span class='image-container center icon'></span>
-					<span id="spacer1"></span>
-					<span class='team-container left ion-ios-americanfootball icon'></span>
-					<span id="spacer2"></span>
-					<span class='owner-container left ion-person icon'></span>
-				</div>
 
-				<% ranks.forEach(function(rank, index){ %>
-				<% if(index != 24){ %>
-					<% var imgURL = 'https://b.fssta.com/uploads/content/dam/fsdigital/fscom/global/dev/static_resources/ncaaf/teams/retina/' + rank.imgNumber + '.vresize.48.48.medium.0.png' %>
-					<div class='flex-container rank-item row secondary-card'>
-						<!-- Insert rank card items here. -->
-							<span class='rank-container center'><%=rank.rank%></span>
+					<% standings.forEach(function(place, index){ %>
+						<div class='flex-container row center standings'>
+							<h3 class='standings-rank center'> <%= index + 1 %> </h3>
+							<h3 class = 'standings-name right'> <%= place.name %> </h3>
+							<h3 class = 'standings-score right'> <%= place.score %> points</h3>
+						</div>
+					<% }) %>
+
+					<h2>Weekly Standings</h2>
+
+					<div class='flex container column'>
+						<div class='flex-container rank-item row'>
+							<span class='rank-container center ion-ribbon-a icon'></span>
+							<span class='image-container center icon'></span>
 							<span id="spacer1"></span>
-							<span class='image-container center'><img class='logo' src="<%= imgURL %>" style="height:100%;"></span>
-							<span class='team-container left'><%=rank.team%></span>
+							<span class='team-container left ion-ios-americanfootball icon'></span>
 							<span id="spacer2"></span>
-							<span class='owner-container left'><%=rank.owner%></span>
-					</div>
-				<% } %>
-				<% }); %>
+							<span class='owner-container left ion-person icon'></span>
+						</div>
 
-			</div>
+						<% ranks.forEach(function(rank, index){ %>
+						<% if(index != 24){ %>
+							<% var imgURL = 'https://b.fssta.com/uploads/content/dam/fsdigital/fscom/global/dev/static_resources/ncaaf/teams/retina/' + rank.imgNumber + '.vresize.48.48.medium.0.png' %>
+							<div class='flex-container rank-item row secondary-card'>
+								<!-- Insert rank card items here. -->
+									<span class='rank-container center'><%=rank.rank%></span>
+									<span id="spacer1"></span>
+									<span class='image-container center'><img class='logo' src="<%= imgURL %>" style="height:100%;"></span>
+									<span class='team-container left'><%=rank.team%></span>
+									<span id="spacer2"></span>
+									<span class='owner-container left'><%=rank.owner%></span>
+							</div>
+						<% } %>
+						<% }); %>
+					</div>
+				</div>
+
+
 		</div>
 	</div>
 	
