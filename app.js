@@ -150,9 +150,9 @@ function getStandings(curWeek, res, allRanks){
 				name: 'Ken',
 				score: kenPoints
 			});
-
+			
 			var sortedArray = playerObjects.sort(compare);
-			res.render('ranks', {ranks: allRanks, standings: sortedArray}); 
+			res.render('ranks', {ranks: allRanks, standings: sortedArray, week: curWeek}); 
 		}
 	});	
 }
@@ -163,9 +163,9 @@ function compare(a, b){
 
 	var comparison = 0;
 	if(scoreA > scoreB){
-		comparison = -1;
-	} else if (scoreA < scoreB){
 		comparison = 1;
+	} else if (scoreA < scoreB){
+		comparison = -1;
 	}
 	return comparison
 }

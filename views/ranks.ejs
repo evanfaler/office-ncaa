@@ -12,26 +12,38 @@
 	
 	<div class='main-card main flex-container column'>
 		<div class='flex-container row'>
+			
+			
 			<div class='flex-container secondary-card tab column'>
-				<a class='tab-item active center top' href='/ranks/1'>1</a>
-				<a class='tab-item center' href='/ranks/2'>2</a>
-				<a class='tab-item center' href='/ranks/3'>3</a>
+				
+				<% for(var i = 1; i < 4; i++){ %>
+					<% var classString = 'tab-item center'; %>
+					<% if(i === 1){ %>
+						<% classString += ' top'; %>
+					<% } %>
+					<% if(i == week){ %>
+						<% classString += ' active'; %>
+					<% } %>
+					<% var hrefString = '/ranks/' + i; %>
+					<a class='<%=classString%>' href='<%=hrefString%>'><%=i%></a>
+				<% } %>
 				
 			</div>
 
 				<div class='flex-container team column'>
 
-					<h2>Weekly Standings</h2>
+					<h2>Weekly Player Standings</h2>
 
 					<% standings.forEach(function(place, index){ %>
 						<div class='flex-container row center standings'>
-							<h3 class='standings-rank center'> <%= index + 1 %> </h3>
+							<!--<%= index + 1 %>-->
+							<span class='flex-container row center  standings-rank'> <img class='flex-container column center' src='https://image.flaticon.com/icons/svg/321/321854.svg'> </span> 
 							<h3 class = 'standings-name right'> <%= place.name %> </h3>
 							<h3 class = 'standings-score right'> <%= place.score %> points</h3>
 						</div>
 					<% }) %>
 
-					<h2>Weekly Standings</h2>
+					<h2>Weekly Team Rankings</h2>
 
 					<div class='flex container column'>
 						<div class='flex-container rank-item row'>
