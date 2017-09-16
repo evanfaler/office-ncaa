@@ -4,7 +4,7 @@
   "description": "Office ncaa ranking webpage for southwest pod",
   "main": "app.js",
   "scripts": {
-    "test": "Evan Faler"
+    "test": "Evan Faler",
     "start": "node app.js"
   },
   "author": "Evan Faler",
