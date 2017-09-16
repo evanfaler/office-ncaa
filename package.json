@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "Evan Faler"
+    "start": "node app.js"
   },
   "author": "Evan Faler",
   "license": "ISC",
