@@ -32,48 +32,48 @@ var PROJECT_TOKEN = 't1Ybx2XojMQT';
 var RUN_TOKEN = '';
 
 //===PARSEHUB REQUESTS===//
-//Request new data run from parseHub Every day at 5:55AM and 11:55AM
-//scheduler for 5:55AM
-// var j = schedule.scheduleJob('0 55 5 * * *', function(){
-// 	newRun();	//requests new parseHub run
+//Request new data run from parseHub Every Monday at 5:55AM and 11:55AM
+//scheduler for Monday 5:55AM
+var j = schedule.scheduleJob('0 55 5 * * 1', function(){
+	newRun();	//requests new parseHub run
 
-// 	var date = new Date();
-// 	var current_hour = date.getHours();
-// 	var current_minute = date.getMinutes();
-// 	var current_second = date.getSeconds();
-//   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
-// });
-// //scheduler for 11:55PM
-// var j = schedule.scheduleJob('0 55 11 * * *', function(){
-// 	newRun();	//requests new parseHub run
+	var date = new Date();
+	var current_hour = date.getHours();
+	var current_minute = date.getMinutes();
+	var current_second = date.getSeconds();
+  	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
+});
+//scheduler for Monday 11:55PM
+var j = schedule.scheduleJob('0 55 11 * * 1', function(){
+	newRun();	//requests new parseHub run
 
-// 	var date = new Date();
-// 	var current_hour = date.getHours();
-// 	var current_minute = date.getMinutes();
-//   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute);
-// });
+	var date = new Date();
+	var current_hour = date.getHours();
+	var current_minute = date.getMinutes();
+  	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute);
+});
 
-// //Retrieve most recent data run from parseHub Every day at 6:00AM and 12:00PM
-// //scheduler for 6:00AM
-// var j = schedule.scheduleJob('0 0 6 * * *', function(){
-// 	//PULL DATA FROM PARSEHUB
-// 	getRun();
+//Retrieve most recent data run from parseHub Every day at 6:00AM and 12:00PM
+//scheduler for 6:00AM
+var j = schedule.scheduleJob('0 0 6 * * 1', function(){
+	//PULL DATA FROM PARSEHUB
+	getRun();
 
-// 	var date = new Date();
-// 	var current_hour = date.getHours();
-// 	var current_minute = date.getMinutes();
-//   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
-// });
-// //scheduler for 12:00PM
-// var j = schedule.scheduleJob('0 0 12 * * *', function(){
-// 	//PULL DATA FROM PARSEHUB
-// 	getRun();
+	var date = new Date();
+	var current_hour = date.getHours();
+	var current_minute = date.getMinutes();
+  	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
+});
+//scheduler for 12:00PM
+var j = schedule.scheduleJob('0 0 12 * * 1', function(){
+	//PULL DATA FROM PARSEHUB
+	getRun();
 
-// 	var date = new Date();
-// 	var current_hour = date.getHours();
-// 	var current_minute = date.getMinutes();
-//   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
-// });
+	var date = new Date();
+	var current_hour = date.getHours();
+	var current_minute = date.getMinutes();
+  	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
+});
 
 
 //===HELPER FUNCTIONS===//
@@ -106,7 +106,7 @@ function getRun() {
 	});
 }
 
-function getStandings(curWeek, res, allRanks){
+function getStandings(curWeek, res){
 	var players = ['Evan', 'Gary', 'Joe', 'Ken'];
 	var playerObjects = [];
 
@@ -115,12 +115,20 @@ function getStandings(curWeek, res, allRanks){
 	var joePoints = 0;
 	var kenPoints = 0;
 
-
-	Rank.find({week: curWeek}, function(err, ranks){
+	Rank.find({}, function(err, allRanks){
 		if(err){
 			console.log('Something went wrong finding standings');
 			console.log(err);
 		} else {
+			var totWeeks = allRanks.length / 24;
+
+			var ranks = [];
+			for(var i = 0; i < allRanks.length; i++){
+				if(allRanks[i].week == curWeek){
+					ranks.push(allRanks[i]);
+				};
+			};
+
 			for(var i = 0; i < ranks.length; i++){
 				if(ranks[i].owner === 'Evan'){
 					evanPoints += ranks[i].rank;
@@ -150,21 +158,35 @@ function getStandings(curWeek, res, allRanks){
 				score: kenPoints
 			});
 
-			var sortedArray = playerObjects.sort(compare);
-			res.render('ranks', {ranks: allRanks, standings: sortedArray}); 
+			var sortedArray = playerObjects.sort(compareScore);
+			var sortedRanks = ranks.sort(compareRank);
+			res.render('ranks', {ranks: ranks, standings: sortedArray, week: curWeek, totWeeks: totWeeks}); 
 		}
 	});	
 }
 
-function compare(a, b){
+function compareScore(a, b){
 	var scoreA = a.score;
 	var scoreB = b.score;
 
 	var comparison = 0;
 	if(scoreA > scoreB){
-		comparison = -1;
-	} else if (scoreA < scoreB){
 		comparison = 1;
+	} else if (scoreA < scoreB){
+		comparison = -1;
+	}
+	return comparison
+}
+
+function compareRank(a, b){
+	var rankA = a.rank;
+	var rankB = b.rank;
+
+	var comparison = 0;
+	if(rankA > rankB){
+		comparison = 1;
+	} else if (rankA < rankB){
+		comparison = -1;
 	}
 	return comparison
 }
@@ -294,23 +316,11 @@ app.get('/', function(req, res){
 });
 
 app.get('/ranks', function(req, res){
-	Rank.find({'week':1}).sort({rank:1}).exec(function(err, allRanks){
-        if(err){
-            console.log(err);
-        } else{
-        	getStandings(1, res, allRanks);
-        }
-    });
+	getStandings(1, res);
 });
 
 app.get('/ranks/:week', function(req, res){
-	Rank.find({'week': req.params.week}).sort({rank:1}).exec(function(err, allRanks){
-        if(err){
-            console.log(err);
-        } else{
-        	getStandings(req.params.week, res, allRanks);
-        }
-    });
+	getStandings(req.params.week, res);
 });
 
 app.get('/ranks/edit', function(req, res){
@@ -331,8 +341,4 @@ app.post('/ranks', function(req, res){
 //process.env.PORT, process.env.IP
 app.listen(8080, function(){
 	console.log('Server started on port 8080');
-	//RUN_TOKEN = 'tj_JvS49QrML';		//Week 1
-	//RUN_TOKEN = 'tJrpgN_AbWCW';		//Week 2
-	//RUN_TOKEN = 't7WyMnBm6Yig';		//Week 3
-	//getRun();
 })
