@@ -4,6 +4,7 @@ var request = require('request');
 var schedule = require('node-schedule');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var port = process.env.PORT || 8080;
 
 //set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -339,6 +340,6 @@ app.post('/ranks', function(req, res){
 });
 
 //process.env.PORT, process.env.IP
-app.listen(8080, function(){
+app.listen(port, function(){
 	console.log('Server started on port 8080');
 })

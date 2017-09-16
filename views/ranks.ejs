@@ -12,6 +12,8 @@
 	
 	<div class='main-card main flex-container column'>
 		<div class='flex-container row'>
+			
+			
 			<div class='flex-container secondary-card tab column'>
 				<% for(var i = 1; i < totWeeks+1; i++){ %>
 					<% var classString = 'tab-item center'; %>
@@ -25,6 +27,18 @@
 					<div class='<%=classString%>'>
 						<a class='tab-link' href='<%=hrefString%>'><%=i%></a>
 					</div>
+				<% } %>
+				
+				<% for(var i = 1; i < 4; i++){ %>
+					<% var classString = 'tab-item center'; %>
+					<% if(i === 1){ %>
+						<% classString += ' top'; %>
+					<% } %>
+					<% if(i == week){ %>
+						<% classString += ' active'; %>
+					<% } %>
+					<% var hrefString = '/ranks/' + i; %>
+					<a class='<%=classString%>' href='<%=hrefString%>'><%=i%></a>
 				<% } %>
 				
 			</div>
@@ -71,7 +85,6 @@
 						<% }); %>
 					</div>
 				</div>
-
 
 		</div>
 	</div>
