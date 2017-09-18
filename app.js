@@ -34,8 +34,8 @@ var RUN_TOKEN = '';
 
 //===PARSEHUB REQUESTS===//
 //Request new data run from parseHub Every Monday at 5:55AM and 7:15AM
-//scheduler for Monday 5:55AM
-var j = schedule.scheduleJob('0 55 5 * * 1', function(){
+//scheduler for Monday 5:55AM (9:55 UTC time)
+var j = schedule.scheduleJob('0 55 9 * * 1', function(){
 	newRun();	//requests new parseHub run
 
 	var date = new Date();
@@ -44,8 +44,8 @@ var j = schedule.scheduleJob('0 55 5 * * 1', function(){
 	var current_second = date.getSeconds();
   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
 });
-//scheduler for Monday 7:15PM
-var j = schedule.scheduleJob('0 25 7 * * 1', function(){
+//scheduler for Monday 7:55AM (UTC is Noon)
+var j = schedule.scheduleJob('0 55 11 * * 1', function(){
 	newRun();	//requests new parseHub run
 
 	var date = new Date();
@@ -55,8 +55,8 @@ var j = schedule.scheduleJob('0 25 7 * * 1', function(){
 });
 
 //Retrieve most recent data run from parseHub Every day at 6:00AM and 12:00PM
-//scheduler for 6:00AM
-var j = schedule.scheduleJob('0 0 6 * * 1', function(){
+//scheduler for 6:00AM (10AM UTC time)
+var j = schedule.scheduleJob('0 0 10 * * 1', function(){
 	//PULL DATA FROM PARSEHUB
 	getRun();
 
@@ -65,8 +65,8 @@ var j = schedule.scheduleJob('0 0 6 * * 1', function(){
 	var current_minute = date.getMinutes();
   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
 });
-//scheduler for 12:00PM
-var j = schedule.scheduleJob('0 30 7 * * 1', function(){
+//scheduler for 8:00AM (12:00PM UTC)
+var j = schedule.scheduleJob('0 0 12 * * 1', function(){
 	//PULL DATA FROM PARSEHUB
 	getRun();
 
