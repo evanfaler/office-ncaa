@@ -45,7 +45,7 @@ var j = schedule.scheduleJob('0 55 5 * * 1', function(){
   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
 });
 //scheduler for Monday 7:15PM
-var j = schedule.scheduleJob('0 15 7 * * 1', function(){
+var j = schedule.scheduleJob('0 25 7 * * 1', function(){
 	newRun();	//requests new parseHub run
 
 	var date = new Date();
@@ -66,7 +66,7 @@ var j = schedule.scheduleJob('0 0 6 * * 1', function(){
   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
 });
 //scheduler for 12:00PM
-var j = schedule.scheduleJob('0 0 12 * * 1', function(){
+var j = schedule.scheduleJob('0 30 7 * * 1', function(){
 	//PULL DATA FROM PARSEHUB
 	getRun();
 
