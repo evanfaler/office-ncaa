@@ -4,12 +4,15 @@ var request = require('request');
 var schedule = require('node-schedule');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var basicAuth = require('basic-auth-connect');
+
 var port = process.env.PORT || 8080;
 
 //set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+mongoose.Promise = global.Promise;
 
 //Connect to database
 mongoose.connect("mongodb://evanfaler:Wildlife1@ds131854.mlab.com:31854/ncaa_rank", {useMongoClient: true});
@@ -33,9 +36,9 @@ var PROJECT_TOKEN = 't1Ybx2XojMQT';
 var RUN_TOKEN = '';
 
 //===PARSEHUB REQUESTS===//
-//Request new data run from parseHub Every Monday at 5:55AM and 7:15AM
-//scheduler for Monday 5:55AM (9:55 UTC time)
-var j = schedule.scheduleJob('0 55 9 * * 1', function(){
+//Request new data run from parseHub Every Monday at 5:26AM Odd time to prevent traffic related issues with server.
+//scheduler for Monday 5:26AM (9:26 UTC time)
+var j = schedule.scheduleJob('0 26 9 * * 1', function(){
 	newRun();	//requests new parseHub run
 
 	var date = new Date();
@@ -44,17 +47,8 @@ var j = schedule.scheduleJob('0 55 9 * * 1', function(){
 	var current_second = date.getSeconds();
   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
 });
-//scheduler for Monday 7:55AM (UTC is Noon)
-var j = schedule.scheduleJob('0 55 11 * * 1', function(){
-	newRun();	//requests new parseHub run
 
-	var date = new Date();
-	var current_hour = date.getHours();
-	var current_minute = date.getMinutes();
-  	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute);
-});
-
-//Retrieve most recent data run from parseHub Every day at 6:00AM and 12:00PM
+//Retrieve most recent data run from parseHub Every day at 6:00AM
 //scheduler for 6:00AM (10AM UTC time)
 var j = schedule.scheduleJob('0 0 10 * * 1', function(){
 	//PULL DATA FROM PARSEHUB
@@ -65,17 +59,6 @@ var j = schedule.scheduleJob('0 0 10 * * 1', function(){
 	var current_minute = date.getMinutes();
   	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
 });
-//scheduler for 8:00AM (12:00PM UTC)
-var j = schedule.scheduleJob('0 0 12 * * 1', function(){
-	//PULL DATA FROM PARSEHUB
-	getRun();
-
-	var date = new Date();
-	var current_hour = date.getHours();
-	var current_minute = date.getMinutes();
-  	console.log('parseHub data requested at ' + current_hour + ':' + current_minute);
-});
-
 
 //===HELPER FUNCTIONS===//
 function newRun() {
@@ -320,11 +303,7 @@ app.get('/ranks', function(req, res){
 	getStandings(1, res);
 });
 
-app.get('/ranks/:week', function(req, res){
-	getStandings(req.params.week, res);
-});
-
-app.get('/ranks/edit', function(req, res){
+app.get('/ranks/edit', basicAuth('evanfaler', 'Wildlife1'), function(req, res){
 	Rank.find({'week':1}).sort({rank:1}).exec(function(err, allRanks){
         if(err){
             console.log(err);
@@ -332,6 +311,10 @@ app.get('/ranks/edit', function(req, res){
             res.render('ranks-edit', {ranks: allRanks}); 
         }
     });
+});
+
+app.get('/ranks/:week', function(req, res){
+	getStandings(req.params.week, res);
 });
 
 app.post('/ranks', function(req, res){
