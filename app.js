@@ -33,7 +33,7 @@ var PROJECT_TOKEN = 't1Ybx2XojMQT';
 var RUN_TOKEN = '';
 
 //===PARSEHUB REQUESTS===//
-//Request new data run from parseHub Every Monday at 5:55AM and 11:55AM
+//Request new data run from parseHub Every Monday at 5:55AM and 7:15AM
 //scheduler for Monday 5:55AM
 var j = schedule.scheduleJob('0 55 5 * * 1', function(){
 	newRun();	//requests new parseHub run
@@ -44,8 +44,8 @@ var j = schedule.scheduleJob('0 55 5 * * 1', function(){
 	var current_second = date.getSeconds();
   	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
 });
-//scheduler for Monday 11:55PM
-var j = schedule.scheduleJob('0 55 11 * * 1', function(){
+//scheduler for Monday 7:15PM
+var j = schedule.scheduleJob('0 15 7 * * 1', function(){
 	newRun();	//requests new parseHub run
 
 	var date = new Date();
