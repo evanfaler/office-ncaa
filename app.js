@@ -1,10 +1,11 @@
-var express = require('express');
-var app = express();
-var request = require('request');
-var schedule = require('node-schedule');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
-var basicAuth = require('basic-auth-connect');
+var express 	= require('express');
+var app 		= express();
+var request 	= require('request');
+var cheerio 	= require('cheerio')
+var schedule	= require('node-schedule');
+var mongoose	= require('mongoose');
+var bodyParser	= require('body-parser');
+var basicAuth	= require('basic-auth-connect');
 
 var port = process.env.PORT || 8080;
 
@@ -175,8 +176,6 @@ function compareRank(a, b){
 	return comparison
 }
 
-
-
 //add new weekly poll to database. 
 function addPollToDatabase(body){
 	Rank.find({'week': parseInt(body.coaches_poll[0].week.slice(-2))}).remove(function(err){
@@ -294,6 +293,89 @@ function initializeDB(body){
 	});
 }
 
+function scrapeWeeklySchedule(url){
+	var schedule = [];
+	request(url, function (error, response, html) {
+		if (!error && response.statusCode == 200) {
+			
+			//grab odds html
+			var oddsLink = 'http://www.foxsports.com' + $('.wisbb_firstTeam').parent().find('.wisbb_details').children().children().eq(-2).attr('href');
+			var oddsHTML;
+			request(oddsLink, function(error, response, oHTML){
+				if(error){
+					console.log(error);
+				} else {
+					oddsHTML = oHTML;
+				}
+			});
+			
+			var $ = cheerio.load(html);
+			var odds$ = cheerio.load(oddsHTML);
+		    $('.wisbb_firstTeam').each(function(i, element){
+		    	//Get game information
+		    	var gameDate = $(this).parent().parent().prev().text().trim();
+		    	var gameTime = $(this).parent().find('.wisbb_gameInfo').children().children().eq(1).text();
+		    	
+		    	//get hometeam information
+		     	var homeStacked = $(this).parent().find('.wisbb_secondTeam').children().children().children();
+		    	var homeCity = $(homeStacked).eq(1).children().eq(-1).text().trim();
+		    	var homeTeam = $(homeStacked).eq(2).text();
+		    	var homeRecord = $(homeStacked).eq(3).text();
+		    	var homeImage = $(homeStacked).eq(0).attr('src');
+		    	var homeRank = parseInt($(homeStacked).eq(1).children().eq(0).text(), 10)
+		    	if(isNaN(homeRank)){
+		    		var homeRank = '';
+		    	}else {
+		    		homeRank = '#' + homeRank;
+		    	}
+		    	
+		    	//Get awayteam information
+		    	var awayStacked = $(this).children().children().children();
+		    	var awayCity = $(awayStacked).eq(1).children().eq(-1).text().trim();
+		    	var awayTeam = $(awayStacked).eq(2).text();
+		    	var awayRecord = $(awayStacked).eq(3).text();
+		    	var awayImage = $(awayStacked).eq(0).attr('src');
+		    	var awayRank = parseInt($(awayStacked).eq(1).children().eq(0).text(), 10)
+		    	if(isNaN(awayRank)){
+		    		var awayRank = '';
+		    	}else {
+		    		awayRank = '#' + awayRank;
+		    	}
+		    	
+	    		schedule.push({
+		    		game: i,
+		    		date: gameDate,
+		    		time: gameTime,
+		    		home: {
+		    			city: homeCity, 
+			    		team: homeTeam,
+			    		image: homeImage,
+			    		record: homeRecord,
+			    		rank: homeRank
+		    		}, 
+		    		away: {
+		    			city: awayCity, 
+			    		team: awayTeam,
+			    		image: awayImage,
+			    		record: awayRecord,
+			    		rank: awayRank
+		    		}
+		    	});
+		    	
+				// console.log('Home Team: ' + homeRecord + ' ' + homeRank + ' ' + homeCity + ' ' + homeTeam);
+				// console.log('Away Team: ' + awayRecord + ' ' + awayRank + ' ' + awayCity + ' ' + awayTeam);
+				// console.log('='.repeat(50));
+		    });
+		}
+		//console.log(schedule);
+		console.log(oddsLink);
+	});
+}
+
+function scrapeBettingOdds(url){
+	
+}
+
 //===ROUTES===//
 app.get('/', function(req, res){
 	res.send('Root Directory');
@@ -311,6 +393,12 @@ app.get('/ranks/edit', basicAuth('evanfaler', 'Wildlife1'), function(req, res){
             res.render('ranks-edit', {ranks: allRanks}); 
         }
     });
+});
+
+app.get('/ranks/bracket', function(req, res){
+	var url = 'http://www.foxsports.com/college-football/schedule';
+	scrapeWeeklySchedule(url);
+	res.render('ranks-bracket');
 });
 
 app.get('/ranks/:week', function(req, res){
