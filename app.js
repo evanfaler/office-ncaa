@@ -29,16 +29,35 @@ var rankSchema = new mongoose.Schema({
 	imgNumber: Number
 });
 
+var userSchema = new mongoose.Schema({
+	//user schema here
+	name: String,
+	username: String,
+	password: String,
+	bracketWins: Number,
+	prevBracketWin: Boolean
+
+});
+
+var scheduleSchema = new mongoose.Schema({
+	week: Number,
+	schedule: Array
+});
+
 var Rank = mongoose.model('Rank', rankSchema);
+var User = mongoose.model('User', userSchema);
+var Schedule = mongoose.model('Schedule', scheduleSchema);
+
 
 //ParseHUB Information
 var API_KEY = 'tciMTc7Tu3U0';
 var PROJECT_TOKEN = 't1Ybx2XojMQT';
 var RUN_TOKEN = '';
 
-//===PARSEHUB REQUESTS===//
-//Request new data run from parseHub Every Monday at 5:26AM Odd time to prevent traffic related issues with server.
+//===WEB SCRAPER SCHEDULING===//
+//Request new data run from parseHub and new web scrape Every Monday at 5:26AM Odd time to prevent traffic related issues with server.
 //scheduler for Monday 5:26AM (9:26 UTC time)
+//TODO: Ditch Parsehub and write your own web scraper function for the same thing.
 var j = schedule.scheduleJob('0 26 9 * * 1', function(){
 	newRun();	//requests new parseHub run
 
@@ -46,7 +65,11 @@ var j = schedule.scheduleJob('0 26 9 * * 1', function(){
 	var current_hour = date.getHours();
 	var current_minute = date.getMinutes();
 	var current_second = date.getSeconds();
-  	console.log('new parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
+  	console.log('New parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
+
+  	//Scrape current week schedule and add to DB.
+  	var url = 'http://www.foxsports.com/college-football/schedule';
+	scrapeWeeklySchedule(url);
 });
 
 //Retrieve most recent data run from parseHub Every day at 6:00AM
@@ -87,7 +110,6 @@ function getRun() {
 	  	}
 	}, function(err, resp, body) {
 		addPollToDatabase(JSON.parse(body));
-		//initializeDB(JSON.parse(body));
 	});
 }
 
@@ -206,7 +228,7 @@ function addPollToDatabase(body){
 			//Create new Rank object with updated values
 			var newRank = {
 				rank: rank,
-				team: initRanks[i].team,				//THIS IS WRONG
+				team: initRanks[i].team,
 				year: initRanks[i].year,
 				week: parseInt(curRanks[0].week.slice(-2)),
 				movement: initRanks[i].movement,
@@ -297,7 +319,9 @@ function scrapeWeeklySchedule(url){
 	var schedule = [];
 	request(url, function (error, response, html) {
 		if (!error && response.statusCode == 200) {
-			
+
+			var $ = cheerio.load(html);
+
 			//grab odds html
 			var oddsLink = 'http://www.foxsports.com' + $('.wisbb_firstTeam').parent().find('.wisbb_details').children().children().eq(-2).attr('href');
 			var oddsHTML;
@@ -306,74 +330,114 @@ function scrapeWeeklySchedule(url){
 					console.log(error);
 				} else {
 					oddsHTML = oHTML;
+
+					//Get current Week.
+					var week = $('.wisbb_pageInfoSecondaryText').text().split('Week ')[1].trim();
+
+					//Get each matchup info
+					$('.wisbb_firstTeam').each(function(i, element){
+				    	//Get game information
+				    	var gameDate = $(this).parent().parent().prev().text().trim();
+				    	var gameTime = $(this).parent().find('.wisbb_gameInfo').children().children().eq(1).text();
+				    	
+				    	//get hometeam information
+				     	var homeStacked = $(this).parent().find('.wisbb_secondTeam').children().children().children();
+				    	var homeCity = $(homeStacked).eq(1).children().eq(-1).text().trim();
+				    	var homeTeam = $(homeStacked).eq(2).text();
+				    	var homeRecord = $(homeStacked).eq(3).text();
+				    	var homeImage = $(homeStacked).eq(0).attr('src');
+				    	var homeRank = parseInt($(homeStacked).eq(1).children().eq(0).text(), 10)
+				    	if(isNaN(homeRank)){
+				    		var homeRank = '';
+				    	}else {
+				    		homeRank = '#' + homeRank;
+				    	}
+				    	var homeSpread = scrapeBettingOdds(oddsHTML, homeCity, 'home');
+				    	
+				    	//Get awayteam information
+				    	var awayStacked = $(this).children().children().children();
+				    	var awayCity = $(awayStacked).eq(1).children().eq(-1).text().trim();
+				    	var awayTeam = $(awayStacked).eq(2).text();
+				    	var awayRecord = $(awayStacked).eq(3).text();
+				    	var awayImage = $(awayStacked).eq(0).attr('src');
+				    	var awayRank = parseInt($(awayStacked).eq(1).children().eq(0).text(), 10)
+				    	if(isNaN(awayRank)){
+				    		var awayRank = '';
+				    	}else {
+				    		awayRank = '#' + awayRank;
+				    	}
+				    	var awaySpread = scrapeBettingOdds(oddsHTML, awayCity, 'away');
+				    	
+			    		var obj = {
+				    		game: i,
+				    		date: gameDate,
+				    		time: gameTime,
+				    		home: {
+				    			city: homeCity, 
+					    		team: homeTeam,
+					    		image: homeImage,
+					    		record: homeRecord,
+					    		rank: homeRank,
+					    		spread: homeSpread
+				    		}, 
+				    		away: {
+				    			city: awayCity, 
+					    		team: awayTeam,
+					    		image: awayImage,
+					    		record: awayRecord,
+					    		rank: awayRank,
+					    		spread: awaySpread
+				    		}
+				    	}
+				    	schedule.push(obj);
+				    });
+				    addScheduleToDB(schedule, week)
 				}
-			});
-			
-			var $ = cheerio.load(html);
-			var odds$ = cheerio.load(oddsHTML);
-		    $('.wisbb_firstTeam').each(function(i, element){
-		    	//Get game information
-		    	var gameDate = $(this).parent().parent().prev().text().trim();
-		    	var gameTime = $(this).parent().find('.wisbb_gameInfo').children().children().eq(1).text();
-		    	
-		    	//get hometeam information
-		     	var homeStacked = $(this).parent().find('.wisbb_secondTeam').children().children().children();
-		    	var homeCity = $(homeStacked).eq(1).children().eq(-1).text().trim();
-		    	var homeTeam = $(homeStacked).eq(2).text();
-		    	var homeRecord = $(homeStacked).eq(3).text();
-		    	var homeImage = $(homeStacked).eq(0).attr('src');
-		    	var homeRank = parseInt($(homeStacked).eq(1).children().eq(0).text(), 10)
-		    	if(isNaN(homeRank)){
-		    		var homeRank = '';
-		    	}else {
-		    		homeRank = '#' + homeRank;
-		    	}
-		    	
-		    	//Get awayteam information
-		    	var awayStacked = $(this).children().children().children();
-		    	var awayCity = $(awayStacked).eq(1).children().eq(-1).text().trim();
-		    	var awayTeam = $(awayStacked).eq(2).text();
-		    	var awayRecord = $(awayStacked).eq(3).text();
-		    	var awayImage = $(awayStacked).eq(0).attr('src');
-		    	var awayRank = parseInt($(awayStacked).eq(1).children().eq(0).text(), 10)
-		    	if(isNaN(awayRank)){
-		    		var awayRank = '';
-		    	}else {
-		    		awayRank = '#' + awayRank;
-		    	}
-		    	
-	    		schedule.push({
-		    		game: i,
-		    		date: gameDate,
-		    		time: gameTime,
-		    		home: {
-		    			city: homeCity, 
-			    		team: homeTeam,
-			    		image: homeImage,
-			    		record: homeRecord,
-			    		rank: homeRank
-		    		}, 
-		    		away: {
-		    			city: awayCity, 
-			    		team: awayTeam,
-			    		image: awayImage,
-			    		record: awayRecord,
-			    		rank: awayRank
-		    		}
-		    	});
-		    	
-				// console.log('Home Team: ' + homeRecord + ' ' + homeRank + ' ' + homeCity + ' ' + homeTeam);
-				// console.log('Away Team: ' + awayRecord + ' ' + awayRank + ' ' + awayCity + ' ' + awayTeam);
-				// console.log('='.repeat(50));
-		    });
+			});   
 		}
-		//console.log(schedule);
-		console.log(oddsLink);
 	});
 }
 
-function scrapeBettingOdds(url){
-	
+function scrapeBettingOdds(html, city, location){
+	var $ = cheerio.load(html);
+
+	var spread = $('.wisbb_teamCity').filter(function() {
+	 	return $(this).text().trim() === city;
+	}).parent().parent().parent().parent().parent().children().eq(1).children().eq(0).children().eq(1).children().eq(-1).children().eq(2).html();
+
+	if(spread === null){
+		spread = 0;
+	} else{
+		if(location === 'away'){
+			spread = spread.split('<br>')[0];
+		}else if (location === 'home'){
+			spread = spread.split('<br>')[1];
+		}
+		
+	}
+	return(spread);
+}
+
+function addScheduleToDB(curSchedule, curWeek){
+	//Remove schedules with same week
+		//If schedule for week exists, delete all entries.
+	Schedule.find({week: curWeek}).remove(function(err){
+		console.log('Removed any schedules for given week');
+
+		var newSchedule = {
+			week: curWeek,
+			schedule: curSchedule
+		};
+
+		Schedule.create(newSchedule, function(err, newlyCreated){
+			if(err){
+				console.log('Schedule database NOT Updated. Error Below:');
+				console.log(err);
+			} else {
+				console.log('Schedule succesfully saved to database');
+			}
+		});
+	});		
 }
 
 //===ROUTES===//
@@ -396,8 +460,6 @@ app.get('/ranks/edit', basicAuth('evanfaler', 'Wildlife1'), function(req, res){
 });
 
 app.get('/ranks/bracket', function(req, res){
-	var url = 'http://www.foxsports.com/college-football/schedule';
-	scrapeWeeklySchedule(url);
 	res.render('ranks-bracket');
 });
 
