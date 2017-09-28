@@ -440,6 +440,13 @@ function addScheduleToDB(curSchedule, curWeek){
 	});		
 }
 
+function getCurrentBracket(callback){
+	Schedule.find().sort({week:-1}).exec(function(err, allSchedules){
+		var curSchedule = allSchedules[0];
+		callback(curSchedule);
+	})
+}
+
 //===ROUTES===//
 app.get('/', function(req, res){
 	res.send('Root Directory');
@@ -460,7 +467,9 @@ app.get('/ranks/edit', basicAuth('evanfaler', 'Wildlife1'), function(req, res){
 });
 
 app.get('/ranks/bracket', function(req, res){
-	res.render('ranks-bracket');
+	getCurrentBracket(function(schedule){
+		res.render('ranks-bracket', {schedule: schedule});
+	});
 });
 
 app.get('/ranks/:week', function(req, res){

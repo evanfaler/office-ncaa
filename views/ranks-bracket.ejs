@@ -16,31 +16,83 @@
 			
 			<div class='flex-container secondary-card tab column'>
 				<div class='tab-item center top'>
-					<a class='tab-link' href='#'>E</a>
+					<a class='tab-link' href='/ranks/bracket/evan'>E</a>
 				</div>
 				
 				<div class='tab-item center'>
-					<a class='tab-link' href='#'>G</a>
+					<a class='tab-link' href='/ranks/bracket/gary'>G</a>
 				</div>
 				
 				<div class='tab-item center'>
-					<a class='tab-link' href='#'>J</a>
+					<a class='tab-link' href='/ranks/bracket/joe'>J</a>
 				</div>
 				
 				<div class='tab-item center'>
-					<a class='tab-link' href='#'>K</a>
+					<a class='tab-link' href='/ranks/bracket/ken'>K</a>
 				</div>
 				
 			</div>
 
 				<div class='flex-container team column'>
 
-					<h2>Week __ Schedule</h2>
+					<h2>Week <%=schedule.week%> Schedule</h2>
+					<% var scheduleArray = schedule['schedule'] %>
+					<% for(var i = 0; i < scheduleArray.length; i++){ %>
+						<div class='schedule-row flex-container row'>
+							<div class='schedule-card secondary-card' id='<%="game" + i + "a"%>'>
+								<img class='schedule-logo-left' src="<%=scheduleArray[i].away.image%>">
+								<span class='schedule-secondary-left'><%=scheduleArray[i].away.rank%> <%=scheduleArray[i].away.city%></span>
+								<span class='schedule-primary-left'>
+									<span class='record'><%=scheduleArray[i].away.record%></span>
+									<span class='team-name'><%=scheduleArray[i].away.team%></span>	
+								</span>
+							</div>
+							<div class='schedule-middle flex-container col center'>
+								<span class='vs'>VS.</span>
+								<div class='flex-container row center'>
+									<% if(scheduleArray[i].away.spread < 0 ){ %>
+										<% var spread = scheduleArray[i].away.spread * -1; %>
+										<span class='ion-arrow-left-b'></span>
+										<span class='spread'> <%=spread%></span>
+									<% } else{ %>
+										<% var spread = scheduleArray[i].home.spread * -1; %>
+										<span class='spread'><%=spread%> </span>
+										<span class='ion-arrow-right-b'></span>
+									<% } %>
+									
+								</div>
+							</div>
+							<div class='schedule-card secondary-card' id='<%="game" + i + "b"%>'>
+								<img class='schedule-logo-right' src="<%=scheduleArray[i].home.image%>">
+								<span class='schedule-secondary-right'><%=scheduleArray[i].home.rank%> <%=scheduleArray[i].home.city%></span>
+								<span class='schedule-primary-right'>
+									<span class='team-name'><%=scheduleArray[i].home.team%></span>
+									<span class='record'><%=scheduleArray[i].home.record%></span>
+								</span>							
+							</div>
+						</div>
 
+						<!-- <div class='flex-container row schedule-row'>
+							<div class='schedule-card secondary-card'>
+								<span class='schedule-secondary'><%=scheduleArray[i].away.rank%></span>
+								<span class='schedule-secondary'><%=scheduleArray[i].away.city%></span>
+								<span class='schedule-secondary'><%=scheduleArray[i].away.record%></span>
+								<span class='schedule-primary'><%=scheduleArray[i].away.team%></span>
+								<img class='schedule-logo' src="<%=scheduleArray[i].away.image%>">
+							</div>
+							<div class='schedule-middle flex-container center'>
+								<span>VS.</span>
+							</div>
+							<div class='schedule-card secondary-card row left'>
+								<img class='schedule-logo' src="<%=scheduleArray[i].home.image%>">
+								<span><%=scheduleArray[i].home.team%></span>
+							</div>
+						</div> -->
+					<% } %>					
 				</div>
 
 		</div>
 	</div>
-	
+	<script type="text/javascript" src='/scripts/bracket.js'></script>
 </body>
 </html>
