@@ -201,6 +201,7 @@ body {
 }
 
 .schedule-card:hover {
+	cursor: pointer;
 	background-color: #36D1DC;
 	color: white;
 }
