@@ -12,7 +12,8 @@ var port = process.env.PORT || 8080;
 //set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+bodyParser.urlencoded({extended: true});
 mongoose.Promise = global.Promise;
 
 //Connect to database
@@ -29,23 +30,21 @@ var rankSchema = new mongoose.Schema({
 	imgNumber: Number
 });
 
-var userSchema = new mongoose.Schema({
-	//user schema here
+var predictionSchema = new mongoose.Schema({
+	//prediction schema here
 	name: String,
-	username: String,
-	password: String,
-	bracketWins: Number,
-	prevBracketWin: Boolean
-
+	week: Number,
+	predictions: Array
 });
 
 var scheduleSchema = new mongoose.Schema({
+	name: String,
 	week: Number,
 	schedule: Array
 });
 
 var Rank = mongoose.model('Rank', rankSchema);
-var User = mongoose.model('User', userSchema);
+var Prediction = mongoose.model('Prediction', predictionSchema);
 var Schedule = mongoose.model('Schedule', scheduleSchema);
 
 
@@ -467,8 +466,29 @@ app.get('/ranks/edit', basicAuth('evanfaler', 'Wildlife1'), function(req, res){
 });
 
 app.get('/ranks/bracket', function(req, res){
+	//Display all users brackets.
+	//Show comparisons?
+	//Show Daily rights and wrongs?
+	res.render('ranks-bracket');
+});
+
+app.get('/ranks/bracket/new', function(req, res){
 	getCurrentBracket(function(schedule){
-		res.render('ranks-bracket', {schedule: schedule});
+		res.render('ranks-bracket-new', {schedule: schedule});
+	});
+});
+
+app.post('/ranks/bracket', function(req, res){
+	//Update DB
+	Prediction.create(req.body, function(err, newlyCreated){
+		if(err){
+			console.log('Prediction database NOT Updated. Error Below:');
+			console.log(err);
+		} else {
+			console.log('Prediction succesfully saved to database');
+			console.log(req.body);
+			//Redirect is handled by bracket.js to redirect to /ranks/bracket
+		}
 	});
 });
 
