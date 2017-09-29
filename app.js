@@ -439,6 +439,31 @@ function addScheduleToDB(curSchedule, curWeek){
 	});		
 }
 
+function savePrediction(prediction) {
+	Prediction.findOne( {name: prediction.name, week: prediction.week}, function (err, result) {
+	    if (err) {
+	    	console.log(err)
+	    }
+	    if (!result) {
+	        //Did not find anything in database, Now add new prediction to it.
+	        Prediction.create(prediction, function(err, newlyCreated){
+				if(err){
+					console.log('Prediction database NOT Updated. Error Below:');
+					console.log(err);
+				} else {
+					console.log('Prediction succesfully saved to database');
+					//Redirect is handled by bracket.js to redirect to /ranks/bracket
+				}
+			});
+			//Return success
+			return 201;
+	    }else {
+	    	//Did find entry in database, alert user that they have already submitted a prediction.
+	    	return 409;
+	    }
+	});	
+}
+
 function getCurrentBracket(callback){
 	Schedule.find().sort({week:-1}).exec(function(err, allSchedules){
 		var curSchedule = allSchedules[0];
@@ -479,17 +504,7 @@ app.get('/ranks/bracket/new', function(req, res){
 });
 
 app.post('/ranks/bracket', function(req, res){
-	//Update DB
-	Prediction.create(req.body, function(err, newlyCreated){
-		if(err){
-			console.log('Prediction database NOT Updated. Error Below:');
-			console.log(err);
-		} else {
-			console.log('Prediction succesfully saved to database');
-			console.log(req.body);
-			//Redirect is handled by bracket.js to redirect to /ranks/bracket
-		}
-	});
+	res.send(savePrediction(req.body));
 });
 
 app.get('/ranks/:week', function(req, res){
