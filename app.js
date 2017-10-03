@@ -471,7 +471,7 @@ function savePrediction(prediction) {
 }
 
 function getCurrentBracket(callback){
-	Schedule.find().sort({week:-1}).exec(function(err, allSchedules){
+	Schedule.find().sort({week:-1, name: 1}).exec(function(err, allSchedules){
 		var curSchedule = allSchedules[0];
 		callback(curSchedule);
 	})
