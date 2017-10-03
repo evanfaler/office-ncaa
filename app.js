@@ -52,6 +52,7 @@ var Schedule = mongoose.model('Schedule', scheduleSchema);
 var API_KEY = 'tciMTc7Tu3U0';
 var PROJECT_TOKEN = 't1Ybx2XojMQT';
 var RUN_TOKEN = '';
+var currentWeek = 5;
 
 //===WEB SCRAPER SCHEDULING===//
 //Request new data run from parseHub and new web scrape Every Monday at 5:26AM Odd time to prevent traffic related issues with server.
@@ -67,11 +68,11 @@ var j = schedule.scheduleJob('0 26 9 * * 1', function(){
   	console.log('New parsHub run requested at ' + current_hour + ':' + current_minute + ':' + current_second);
 
   	//Scrape current week schedule and add to DB.
-  	var url = 'http://www.foxsports.com/college-football/schedule';
+  	var url = 'http://www.foxsports.com/college-football/schedule?season=2017&seasonType=1&week=' + currentWeek + '&group=0';
 	scrapeWeeklySchedule(url);
 });
 
-//Retrieve most recent data run from parseHub Every day at 6:00AM
+//Retrieve most recent data run from parseHub Every Monday at 6:00AM
 //scheduler for 6:00AM (10AM UTC time)
 var j = schedule.scheduleJob('0 0 10 * * 1', function(){
 	//PULL DATA FROM PARSEHUB
@@ -200,6 +201,7 @@ function compareRank(a, b){
 //add new weekly poll to database. 
 function addPollToDatabase(body){
 	Rank.find({'week': parseInt(body.coaches_poll[0].week.slice(-2))}).remove(function(err){
+		currentWeek = parseInt(body.coaches_poll[0].week.slice(-2));
 		console.log(err);
 	});
 	
@@ -418,24 +420,27 @@ function scrapeBettingOdds(html, city, location){
 }
 
 function addScheduleToDB(curSchedule, curWeek){
-	//Remove schedules with same week
-		//If schedule for week exists, delete all entries.
-	Schedule.find({week: curWeek}).remove(function(err){
-		console.log('Removed any schedules for given week');
-
-		var newSchedule = {
+	//If schedule for week exists, prevent deletion of entries.
+	Schedule.findOne({week: curWeek}, function(err, result){
+		if(err){
+			console.log(err);
+		}
+		if(!result){
+			//Didn't find anything in database, now add new schedule.
+			var newSchedule = {
 			week: curWeek,
 			schedule: curSchedule
-		};
+			};
 
-		Schedule.create(newSchedule, function(err, newlyCreated){
-			if(err){
-				console.log('Schedule database NOT Updated. Error Below:');
-				console.log(err);
-			} else {
-				console.log('Schedule succesfully saved to database');
-			}
-		});
+			Schedule.create(newSchedule, function(err, newlyCreated){
+				if(err){
+					console.log('Schedule database NOT Updated. Error Below:');
+					console.log(err);
+				} else {
+					console.log('Schedule succesfully saved to database');
+				}
+			});
+		}		
 	});		
 }
 
@@ -459,6 +464,7 @@ function savePrediction(prediction) {
 			return 201;
 	    }else {
 	    	//Did find entry in database, alert user that they have already submitted a prediction.
+	    	console.log('Week ' + currentWeek + 'already exists in DB!');
 	    	return 409;
 	    }
 	});	
@@ -469,6 +475,14 @@ function getCurrentBracket(callback){
 		var curSchedule = allSchedules[0];
 		callback(curSchedule);
 	})
+}
+
+function getCurrentPredictions(curSched, callback){
+	var curWeek = curSched.week;
+
+	Prediction.find({week: curWeek}).exec(function(err, curPredictions){
+		callback(curPredictions);
+	});
 }
 
 //===ROUTES===//
@@ -494,7 +508,12 @@ app.get('/ranks/bracket', function(req, res){
 	//Display all users brackets.
 	//Show comparisons?
 	//Show Daily rights and wrongs?
-	res.render('ranks-bracket');
+	getCurrentBracket(function(schedule){
+		getCurrentPredictions(schedule, function(predictions){
+			// console.log(predictions);
+			res.render('ranks-bracket', {schedule: schedule, predictions: predictions});
+		});
+	});
 });
 
 app.get('/ranks/bracket/new', function(req, res){
@@ -519,4 +538,6 @@ app.post('/ranks', function(req, res){
 //process.env.PORT, process.env.IP
 app.listen(port, function(){
 	console.log('Server started on port 8080');
+	var url = 'http://www.foxsports.com/college-football/schedule?season=2017&seasonType=1&week=' + currentWeek + '&group=0';
+	scrapeWeeklySchedule(url);
 })

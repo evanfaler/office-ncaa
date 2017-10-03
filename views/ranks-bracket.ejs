@@ -4,16 +4,115 @@
 	<title>NCAA Index</title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<link href="https://fonts.googleapis.com/css?family=Roboto|Permanent+Marker" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/components/button.min.css">
 </head>
 <body>
 
 	<h1 class='title-header'>NCAA Top 25 Pick'em</h1>
+
+	<div class='flex-container row center' style='margin-bottom: 20px;'>
+		<a id='weeklyPickem' class='ui primary button' href='/ranks/bracket/new'>Fill Out Predictions</a>
+	</div>
 	
 	<div class='main-card main flex-container column'>
-		<div class='flex-container row'>
+		<div class='flex-container row center'>
 				<div class='flex-container team column'>
 
-					<h2>Week __ Schedule</h2>
+					<h2>Week <%=schedule.week%> Schedule</h2>
+					
+					<div class = 'flex-container column center'>
+						<% var scheduleArray = schedule['schedule']; %>
+						<% var date; %>
+
+						<% for(var i = 0; i < scheduleArray.length; i++){ %>
+							
+							<!-- Date Section Headers Here -->
+							<% if(i === 0){ %>
+								<% date = scheduleArray[i].date; %>
+								<div class='flex-container row left'>
+									<span class = 'team-col header'><%=date%></span>
+									<span class = 'name header'><%= predictions[0].name %></span>
+									<span class = 'name header'><%= predictions[1].name %></span>
+									<span class = 'name header'><%= predictions[2].name %></span>
+									<span class = 'name header'><%= predictions[3].name %></span>
+								</div>
+								<hr style='width: 100%'>
+							<% } else if (scheduleArray[i].date != date) { %>
+								<% date = scheduleArray[i].date; %>
+								<div class='flex-container row left'>
+									<span class = 'team-col header'><%=date%></span>
+									<span class = 'name header'><%= predictions[0].name %></span>
+									<span class = 'name header'><%= predictions[1].name %></span>
+									<span class = 'name header'><%= predictions[2].name %></span>
+									<span class = 'name header'><%= predictions[3].name %></span>
+								</div>
+								<hr style='width: 100%'>
+							<% } %>
+
+							<!-- Insert game info here. -->
+							<div class='flex-container row left game'>
+								<span class = 'name team-image'><img src='<%=scheduleArray[i].away.image.replace(/200/g, "23")%>'></span>
+								<span class='team-col'><%=scheduleArray[i].away.rank%> <%=scheduleArray[i].away.city%> <%=scheduleArray[i].away.team%></span>
+								<% if (typeof predictions !== 'undefined') { %>
+								    <!-- the variable is defined -->
+								    <% var counter = 0; %>
+								    <% for(var k = 0; k < predictions.length; k++){ %>
+										<% if(predictions[k].predictions[i] === 0){ %>
+											<span class = 'name cell'><i class="icon ion-record"></i></span>
+										<% } else{ %>
+											<span class='name cell'> </span>
+										<% } %>
+										<% counter++; %>
+									<% } %>
+									<% for(var k = counter; k < 4; k++){ %>
+										<span class='name cell'> </span>
+									<% } %>
+								<% } else { %>
+									<span class='name cell'> </span>
+									<span class='name cell'> </span>
+									<span class='name cell'> </span>
+									<span class='name cell'> </span>
+								<% } %>
+								
+							</div>
+							<div class='flex-container row left game'>
+								<span class = 'name team-image center'><img src='<%=scheduleArray[i].home.image.replace(/200/g, "23")%>'></span>
+								<span class='team-col'><%=scheduleArray[i].home.rank%> <%=scheduleArray[i].home.city%> <%=scheduleArray[i].home.team%></span>
+								<% if (typeof predictions !== 'undefined') { %>
+								    <!-- the variable is defined -->
+								    <% var counter = 0; %>
+								    <% for(var k = 0; k < predictions.length; k++){ %>
+										<% if(predictions[k].predictions[i] === 1){ %>
+											<span class = 'name cell'><i class="icon ion-record"></i></span>
+										<% } else{ %>
+											<span class='name cell'> </span>
+										<% } %>
+										<% counter++; %>
+									<% } %>
+									<% for(var k = counter; k < 4; k++){ %>
+										<span class='name cell'> </span>
+									<% } %>
+								<% } else { %>
+									<span class='name cell'> </span>
+									<span class='name cell'> </span>
+									<span class='name cell'> </span>
+									<span class='name cell'> </span>
+								<% } %>
+							</div>
+							<hr style='width: 85%; margin-bottom: 20px;'>
+
+						<% } %>
+
+						<!-- Sums row -->
+						<div class='flex-container row left'>
+							<span class = 'team-col header'>Total Correct</span>
+							<span class = 'name header'>Evan</span>
+							<span class = 'name header'>Joe</span>
+							<span class = 'name header'>Ken</span>
+							<span class = 'name header'>Gary</span>
+						</div>
+					</div>
 					
 				</div>
 		</div>

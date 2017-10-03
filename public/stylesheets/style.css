@@ -184,9 +184,9 @@ body {
 
 /*===SCHEDULE CLASSES===*/
 .schedule-row {
-	height: 70px;
+	height: 60px;
 	width: 100%;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 }
 
 .schedule-card {
@@ -275,6 +275,45 @@ body {
 
 .spread {
 	white-space: pre;
+}
+
+table {
+	width: 90%;
+}
+
+.team-col {
+	width: 50%;
+	text-align: left;
+}
+
+.header {
+	margin-top: 15px;
+	font-weight: 800;
+}
+
+.name {
+	width: 50px;
+	height: 30px;
+	text-align: center;
+	white-space: pre;
+}
+
+.cell{
+
+}
+
+.pick-right {
+	color: green;
+}
+
+.pick-wrong {
+	color: red;
+}
+
+.team-image {
+	width: 23px;
+	height: 23px;
+    background-size: cover;
 }
 
 /*===CMS CLASSES===*/
