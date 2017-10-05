@@ -487,7 +487,7 @@ function getCurrentPredictions(curSched, callback){
 
 //===ROUTES===//
 app.get('/', function(req, res){
-	res.send('Root Directory');
+	res.render('home');
 });
 
 app.get('/ranks', function(req, res){
