@@ -10,10 +10,6 @@
 <body>
 
 	<h1 class='title-header'>NCAA Top 25 Pick'em</h1>
-
-	<div class='flex-container row center' style='margin-bottom: 20px;'>
-		<a id='weeklyPickem' class='ui primary button' href='/ranks/bracket/new'>Fill Out Predictions</a>
-	</div>
 	
 	<div class='main-card main flex-container column'>
 		<div class='flex-container row center'>
@@ -58,7 +54,7 @@
 								    <!-- the variable is defined -->
 								    <% var counter = 0; %>
 								    <% for(var k = 0; k < predictions.length; k++){ %>
-										<% if(predictions[k].predictions[i] === 0){ %>
+								    	<% if(predictions[k].predictions[i] === 0){ %>
 											<span class = 'name cell'><i class="icon ion-record"></i></span>
 										<% } else{ %>
 											<span class='name cell'> </span>
