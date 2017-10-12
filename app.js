@@ -557,7 +557,6 @@ app.get('/ranks/bracket', function(req, res){
 				}
 				
 				for(var i = 0; i < 4; i++){
-					
 					//If nameIndex does not contain a value for the current i, then splice in empty value
 					if(!nameIndex.includes(i)){
 						predictions.splice(i, 0, {name: names[i], week: -1, predictions: []});
