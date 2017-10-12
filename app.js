@@ -480,7 +480,7 @@ function getCurrentBracket(callback){
 function getCurrentPredictions(curSched, callback){
 	var curWeek = curSched.week;
 
-	Prediction.find({week: curWeek}).exec(function(err, curPredictions){
+	Prediction.find({week: curWeek}).sort({name: 1}).exec(function(err, curPredictions){
 		callback(curPredictions);
 	});
 }
@@ -563,6 +563,8 @@ app.get('/ranks/bracket', function(req, res){
 					}
 				}
 			}
+			console.log(nameIndex);
+			console.log(predictions);
 			res.render('ranks-bracket', {schedule: schedule, predictions: predictions});
 		});
 	});
