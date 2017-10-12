@@ -7,13 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/components/input.min.css">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/components/icon.min.css">
 	<link href="https://fonts.googleapis.com/css?family=Droid+Serif|Permanent+Marker" rel="stylesheet">
-
 	
 </head>
 <body>
 
 	<h1 class="title-header">Edit Team Ownership</h1>
 
+	<div class='flex-container row center'>
+		<button class="ui primary button small" style='margin-bottom: 20px;' onClick='getNewSchedule()'>Update Weekly Schedule</button>
+	</div>
 
 	<form action="/ranks" method="POST" class='cms-container'>
 		<table class='cms-table main-card' cellspacing="0" cellpadding="5">
@@ -54,6 +56,6 @@
 			</div>		
 	</form>
 	
-
+<script type="text/javascript" src='/scripts/bracket-edit.js'></script>
 </body>
 </html>

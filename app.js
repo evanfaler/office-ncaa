@@ -52,7 +52,7 @@ var Schedule = mongoose.model('Schedule', scheduleSchema);
 var API_KEY = 'tciMTc7Tu3U0';
 var PROJECT_TOKEN = 't1Ybx2XojMQT';
 var RUN_TOKEN = '';
-var currentWeek = 5;
+var currentWeek = 7;
 
 //===WEB SCRAPER SCHEDULING===//
 //Request new data run from parseHub and new web scrape Every Monday at 5:26AM Odd time to prevent traffic related issues with server.
@@ -487,11 +487,35 @@ function getCurrentPredictions(curSched, callback){
 
 //===ROUTES===//
 app.get('/', function(req, res){
-	res.send('Root Directory');
+	res.render('home');
 });
 
 app.get('/ranks', function(req, res){
-	getStandings(1, res);
+	Rank.find().sort({week: -1}).exec(function(err, allRanks){
+		if(err){
+			console.log(err);
+		} else{
+			var mostRecent = allRanks[0];
+			currentWeek = mostRecent.week;
+			
+			getStandings(currentWeek, res);
+		}
+	});
+});
+
+app.get('/ranks/bracket/update', function(req, res){
+	//Need to assign current week.
+	Rank.find().sort({week: -1}).exec(function(err, allRanks){
+		if(err){
+			console.log(err);
+		} else{
+			var mostRecent = allRanks[0];
+			currentWeek = mostRecent.week;
+			
+			var url = 'http://www.foxsports.com/college-football/schedule?season=2017&seasonType=1&week=' + currentWeek + '&group=0';
+			scrapeWeeklySchedule(url);
+		}
+	});
 });
 
 app.get('/ranks/edit', basicAuth('evanfaler', 'Wildlife1'), function(req, res){
@@ -508,9 +532,38 @@ app.get('/ranks/bracket', function(req, res){
 	//Display all users brackets.
 	//Show comparisons?
 	//Show Daily rights and wrongs?
+
+	
 	getCurrentBracket(function(schedule){
 		getCurrentPredictions(schedule, function(predictions){
-			// console.log(predictions);
+			
+			var names = ['Evan','Gary','Ken','Joe'];
+			
+			//Push and order predictions array to match name array.
+			if(predictions.length === 0){
+				//If prediction array is empty, fill in with empty data.
+				for(var i = 0; i < 4; i++){
+					predictions.push({
+						name: names[i],
+						week: 0,
+						predictions: []
+					})
+				}
+			} else if (predictions.length < 4){
+				//If prediction array is not full, fill in array with correct order
+				var nameIndex = [];
+				for(var i = 0; i < predictions.length; i++){
+					nameIndex.push(names.indexOf(predictions[i].name));
+				}
+				
+				for(var i = 0; i < 4; i++){
+					
+					//If nameIndex does not contain a value for the current i, then splice in empty value
+					if(!nameIndex.includes(i)){
+						predictions.splice(i, 0, {name: names[i], week: -1, predictions: []});
+					}
+				}
+			}
 			res.render('ranks-bracket', {schedule: schedule, predictions: predictions});
 		});
 	});
@@ -538,6 +591,4 @@ app.post('/ranks', function(req, res){
 //process.env.PORT, process.env.IP
 app.listen(port, function(){
 	console.log('Server started on port 8080');
-	var url = 'http://www.foxsports.com/college-football/schedule?season=2017&seasonType=1&week=' + currentWeek + '&group=0';
-	scrapeWeeklySchedule(url);
 })

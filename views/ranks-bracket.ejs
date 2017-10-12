@@ -10,10 +10,6 @@
 <body>
 
 	<h1 class='title-header'>NCAA Top 25 Pick'em</h1>
-
-	<div class='flex-container row center' style='margin-bottom: 20px;'>
-		<a id='weeklyPickem' class='ui primary button' href='/ranks/bracket/new'>Fill Out Predictions</a>
-	</div>
 	
 	<div class='main-card main flex-container column'>
 		<div class='flex-container row center'>
@@ -34,8 +30,8 @@
 									<span class = 'team-col header'><%=date%></span>
 									<span class = 'name header'> Evan </span>
 									<span class = 'name header'> Gary </span>
-									<span class = 'name header'> Joe </span>
 									<span class = 'name header'> Ken </span>
+									<span class = 'name header'> Joe </span>
 								</div>
 								<hr style='width: 100%'>
 							<% } else if (scheduleArray[i].date != date) { %>
@@ -44,8 +40,8 @@
 									<span class = 'team-col header'><%=date%></span>
 									<span class = 'name header'> Evan </span>
 									<span class = 'name header'> Gary </span>
-									<span class = 'name header'> Joe </span>
 									<span class = 'name header'> Ken </span>
+									<span class = 'name header'> Joe </span>
 								</div>
 								<hr style='width: 100%'>
 							<% } %>
@@ -53,12 +49,12 @@
 							<!-- Insert game info here. -->
 							<div class='flex-container row left game'>
 								<span class = 'name team-image'><img src='<%=scheduleArray[i].away.image.replace(/200/g, "23")%>'></span>
-								<span class='team-col'><%=scheduleArray[i].away.rank%> <%=scheduleArray[i].away.city%> <%=scheduleArray[i].away.team%></span>
+								<span class='team-col'><%=scheduleArray[i].away.rank%> <%=scheduleArray[i].away.city%> <%=scheduleArray[i].away.team%>  <%=scheduleArray[i].away.spread%></span>
 								<% if (typeof predictions !== 'undefined') { %>
 								    <!-- the variable is defined -->
 								    <% var counter = 0; %>
 								    <% for(var k = 0; k < predictions.length; k++){ %>
-										<% if(predictions[k].predictions[i] === 0){ %>
+								    	<% if(predictions[k].predictions[i] === 0){ %>
 											<span class = 'name cell'><i class="icon ion-record"></i></span>
 										<% } else{ %>
 											<span class='name cell'> </span>
@@ -78,7 +74,7 @@
 							</div>
 							<div class='flex-container row left game'>
 								<span class = 'name team-image center'><img src='<%=scheduleArray[i].home.image.replace(/200/g, "23")%>'></span>
-								<span class='team-col'><%=scheduleArray[i].home.rank%> <%=scheduleArray[i].home.city%> <%=scheduleArray[i].home.team%></span>
+								<span class='team-col'><%=scheduleArray[i].home.rank%> <%=scheduleArray[i].home.city%> <%=scheduleArray[i].home.team%> <%=scheduleArray[i].home.spread%></span>
 								<% if (typeof predictions !== 'undefined') { %>
 								    <!-- the variable is defined -->
 								    <% var counter = 0; %>
@@ -107,10 +103,10 @@
 						<!-- Sums row -->
 						<div class='flex-container row left'>
 							<span class = 'team-col header'>Total Correct</span>
-							<span class = 'name header'>Evan</span>
-							<span class = 'name header'>Joe</span>
-							<span class = 'name header'>Ken</span>
-							<span class = 'name header'>Gary</span>
+							<span class = 'name header'> Evan </span>
+							<span class = 'name header'> Gary </span>
+							<span class = 'name header'> Ken </span>
+							<span class = 'name header'> Joe </span>
 						</div>
 					</div>
 					
