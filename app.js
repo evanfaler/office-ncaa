@@ -563,8 +563,6 @@ app.get('/ranks/bracket', function(req, res){
 					}
 				}
 			}
-			console.log(nameIndex);
-			console.log(predictions);
 			res.render('ranks-bracket', {schedule: schedule, predictions: predictions});
 		});
 	});
