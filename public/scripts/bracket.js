@@ -22,6 +22,8 @@ function savePredictions(week) {
 	
 	var predictionArray = [];
 	
+	var completeForm = true;
+	
 	for(var i = 0; i < gameArray.length; i++){
 		if(gameArray[i].childNodes[1].classList.contains('active')){
 			predictionArray.push(0);
@@ -30,6 +32,7 @@ function savePredictions(week) {
 		} else{
 			predictionArray.push(2);
 			console.log('Missing Prediction');
+			completeForm = false;
 		}
 	}
 	
@@ -44,14 +47,22 @@ function savePredictions(week) {
 	    }
 	}
 	
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", '/ranks/bracket', true);
-	xhr.setRequestHeader("Content-type","application/json");
-	xhr.send(JSON.stringify({
-		name: name, 
-		week: week, 
-		predictions: predictionArray
-	}));
+	if(name === ''){
+		completeForm = false;
+	}
 	
-	window.location = "/ranks/bracket";
+	if(completeForm){
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", '/ranks/bracket', true);
+		xhr.setRequestHeader("Content-type","application/json");
+		xhr.send(JSON.stringify({
+			name: name, 
+			week: week, 
+			predictions: predictionArray
+		}));
+		
+		window.location = "/ranks/bracket";
+	}else {
+		alert('Missing Information')
+	}
 }
